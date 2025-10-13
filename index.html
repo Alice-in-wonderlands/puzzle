@@ -1,237 +1,210 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Ghép hình trái tim 💖</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>You Complete My Heart 💖</title>
 <style>
   body {
     margin: 0;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    background: #f9fafb;
+    background: radial-gradient(circle at center, #ffe4ec, #fef6f8);
+    font-family: "Segoe UI", sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
-  }
-  h1 {margin-bottom: 12px;}
-  .board {
-    position: relative;
-    width: 700px;
-    height: 700px;
-    background: #fff;
-    border: 3px solid #ddd;
-    border-radius: 20px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    justify-content: flex-start;
+    height: 100vh;
     overflow: hidden;
-    background-image: url("puzzle.png");
-    background-size: cover;
-    background-position: center;
-    transition: opacity 0.3s;
   }
-  .slot {
-    position: absolute;
-    border: 2px dashed transparent;
-    transition: border-color 0.2s;
+  h1 {
+    margin: 16px;
+    font-weight: 600;
+    color: #e11d48;
   }
-  .slot.correct {border-color: #22c55e;}
-  .tray {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 20px;
-    justify-content: center;
-    max-width: 720px;
+  #game {
+    position: relative;
+    width: 600px;
+    height: 600px;
+    border-radius: 20px;
+    background: white;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    overflow: hidden;
   }
   .piece {
-    width: 130px;
-    height: 130px;
-    object-fit: contain;
+    position: absolute;
+    width: 20%;
+    height: 20%;
+    background-image: url("puzzle.png");
+    background-size: 100% 100%;
     cursor: grab;
-    user-select: none;
+    transition: transform 0.2s;
   }
-  .ghost {
-    position: fixed;
-    pointer-events: none;
-    z-index: 1000;
-    width: 130px;
-    height: 130px;
-    object-fit: contain;
-    opacity: 0.9;
-    transform: scale(1.1);
+  .piece.correct {
+    cursor: default;
+    transform: scale(1);
+  }
+  .message {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    text-align: center;
+    font-size: 2rem;
+    color: #e11d48;
+    font-weight: bold;
+    opacity: 0;
+    transition: all 0.6s ease;
+  }
+  .message.show {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    animation: pulse 1s ease-in-out infinite alternate;
+  }
+  @keyframes pulse {
+    from { transform: translate(-50%, -50%) scale(1); }
+    to { transform: translate(-50%, -50%) scale(1.05); }
   }
   button {
-    margin: 8px;
-    padding: 8px 14px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
+    margin-top: 20px;
+    background: #e11d48;
     color: white;
-    background: #3b82f6;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   }
-  button.secondary { background: #64748b; }
+  button:hover { background: #be123c; }
   @media (max-width:700px){
-    .board{width:90vw;height:90vw;}
-    .piece{width:22vw;height:22vw;}
+    #game{width:90vw;height:90vw;}
   }
 </style>
 </head>
 <body>
-<h1>🧩 Ghép hình trái tim 💖</h1>
-<div class="board" id="board"></div>
-<div class="tray" id="tray"></div>
-<div>
-  <button id="shuffle">Xáo trộn</button>
-  <button id="reset" class="secondary">Đặt lại</button>
-  <button id="toggle" class="secondary">Hiện / ẩn ảnh gốc</button>
+<h1>🧩 You Complete My Heart 💖</h1>
+<div id="game"></div>
+<div class="message" id="msg">
+  You complete my heart 💖<br>
+  <button id="restart">Chơi lại 💫</button>
 </div>
 
 <script>
-const BG = "puzzle.png";
-const PIECES = Array.from({length:14},(_,i)=>`p${i+1}.png`);
+const game = document.getElementById("game");
+const msg = document.getElementById("msg");
+const restartBtn = document.getElementById("restart");
 
-// layout tạm thời theo dáng trái tim (toạ độ tương đối)
-const TARGETS = [
-  {x:0.05,y:0.15,w:0.22,h:0.20}, // p1
-  {x:0.05,y:0.36,w:0.22,h:0.20}, // p2
-  {x:0.05,y:0.57,w:0.22,h:0.20}, // p3
+const NUM_PIECES = 15;
 
-  {x:0.28,y:0.05,w:0.22,h:0.18}, // p4
-  {x:0.28,y:0.24,w:0.22,h:0.18}, // p5
-  {x:0.28,y:0.43,w:0.22,h:0.18}, // p6
-  {x:0.28,y:0.62,w:0.22,h:0.18}, // p7
-
-  {x:0.50,y:0.05,w:0.22,h:0.18}, // p8
-  {x:0.50,y:0.24,w:0.22,h:0.18}, // p9
-  {x:0.50,y:0.43,w:0.22,h:0.18}, // p10
-  {x:0.50,y:0.62,w:0.22,h:0.18}, // p11
-
-  {x:0.72,y:0.15,w:0.22,h:0.20}, // p12
-  {x:0.72,y:0.36,w:0.22,h:0.20}, // p13
-  {x:0.72,y:0.57,w:0.22,h:0.20}, // p14
+// vị trí (tương đối) các mảnh theo hình trái tim đối xứng
+const heartPositions = [
+  {x:0.4,y:0.05}, {x:0.6,y:0.05},
+  {x:0.25,y:0.2}, {x:0.5,y:0.2}, {x:0.75,y:0.2},
+  {x:0.15,y:0.35}, {x:0.37,y:0.35}, {x:0.63,y:0.35}, {x:0.85,y:0.35},
+  {x:0.25,y:0.55}, {x:0.5,y:0.55}, {x:0.75,y:0.55},
+  {x:0.37,y:0.75}, {x:0.63,y:0.75},
+  {x:0.5,y:0.9}
 ];
 
-const board = document.getElementById("board");
-const tray = document.getElementById("tray");
-
-// tạo slot vị trí
-const slots = TARGETS.map((t,i)=>{
-  const div=document.createElement("div");
-  div.className="slot";
-  div.dataset.index=i;
-  Object.assign(div.style,{
-    left:`${t.x*100}%`,
-    top:`${t.y*100}%`,
-    width:`${t.w*100}%`,
-    height:`${t.h*100}%`
-  });
-  board.appendChild(div);
-  return div;
-});
-
-let pieces=[];
+let pieces = [];
 
 function createPieces(){
-  tray.innerHTML="";
-  pieces = PIECES.map((src,i)=>{
-    const img=document.createElement("img");
-    img.src=src;
-    img.className="piece";
-    img.dataset.index=i;
-    tray.appendChild(img);
-    makeDraggable(img);
-    return img;
+  game.innerHTML = "";
+  msg.classList.remove("show");
+  pieces = [];
+
+  heartPositions.forEach((pos, i) => {
+    const p = document.createElement("div");
+    p.className = "piece";
+    // clip-path dạng trái tim phân vùng
+    const r = 50; // bán kính cơ bản để tạo biên cong mềm
+    p.style.clipPath = heartClipPath(i);
+    // vị trí random lúc đầu
+    const rx = Math.random()*80+10;
+    const ry = Math.random()*70+20;
+    p.style.left = rx+"%";
+    p.style.top = ry+"%";
+    p.dataset.correctX = pos.x;
+    p.dataset.correctY = pos.y;
+    p.dataset.placed = "0";
+    p.style.backgroundPosition = `${-pos.x*100}% ${-pos.y*100}%`;
+    makeDraggable(p);
+    game.appendChild(p);
+    pieces.push(p);
   });
 }
 
-let dragging=null, ghost=null, offset={x:0,y:0};
-
-function makeDraggable(img){
-  img.addEventListener("pointerdown",e=>{
-    e.preventDefault();
-    dragging=img;
-    const r=img.getBoundingClientRect();
-    offset.x=e.clientX-r.left;
-    offset.y=e.clientY-r.top;
-    ghost=img.cloneNode();
-    ghost.className="ghost";
-    document.body.appendChild(ghost);
-    moveGhost(e);
-    window.addEventListener("pointermove",moveGhost);
-    window.addEventListener("pointerup",dropPiece);
-  });
+function heartClipPath(i){
+  // tạo hình mảnh tim đối xứng (dạng phân vùng)
+  const sectors = [
+    "polygon(40% 0%,60% 0%,70% 20%,50% 40%,30% 20%)",
+    "polygon(60% 0%,80% 10%,90% 30%,70% 40%,50% 20%)",
+    "polygon(20% 20%,40% 20%,50% 40%,30% 60%,10% 40%)",
+    "polygon(40% 20%,60% 20%,70% 40%,50% 60%,30% 40%)",
+    "polygon(60% 20%,80% 20%,90% 40%,70% 60%,50% 40%)",
+    "polygon(10% 40%,30% 40%,40% 60%,20% 80%,0% 60%)",
+    "polygon(30% 40%,50% 40%,60% 60%,40% 80%,20% 60%)",
+    "polygon(50% 40%,70% 40%,80% 60%,60% 80%,40% 60%)",
+    "polygon(70% 40%,90% 40%,100% 60%,80% 80%,60% 60%)",
+    "polygon(20% 60%,40% 60%,50% 80%,30% 100%,10% 80%)",
+    "polygon(40% 60%,60% 60%,70% 80%,50% 100%,30% 80%)",
+    "polygon(60% 60%,80% 60%,90% 80%,70% 100%,50% 80%)",
+    "polygon(30% 80%,50% 80%,55% 90%,45% 100%,25% 90%)",
+    "polygon(50% 80%,70% 80%,75% 90%,55% 100%,45% 90%)",
+    "polygon(40% 90%,60% 90%,50% 100%)"
+  ];
+  return sectors[i % sectors.length];
 }
 
-function moveGhost(e){
-  if(!ghost) return;
-  ghost.style.left=e.clientX-offset.x+"px";
-  ghost.style.top=e.clientY-offset.y+"px";
-}
+let dragging=null, offsetX=0, offsetY=0;
 
-function dropPiece(e){
-  if(!dragging) return;
-  const rectBoard=board.getBoundingClientRect();
-  const x=e.clientX-rectBoard.left;
-  const y=e.clientY-rectBoard.top;
-  let best=null,min=Infinity;
-  slots.forEach((s,i)=>{
-    const r=s.getBoundingClientRect();
-    const cx=r.left+r.width/2,cy=r.top+r.height/2;
-    const d=Math.hypot(e.clientX-cx,e.clientY-cy);
-    if(d<min){min=d;best={slot:s,i};}
+function makeDraggable(el){
+  el.addEventListener("pointerdown", e=>{
+    if(el.dataset.placed==="1") return;
+    dragging = el;
+    const rect = el.getBoundingClientRect();
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+    el.style.zIndex = 1000;
+    el.setPointerCapture(e.pointerId);
   });
-  if(best&&min<80&&!best.slot.dataset.filled){
-    placePiece(dragging,best.slot,best.i);
-  }
-  ghost.remove();
-  ghost=null; dragging=null;
-  window.removeEventListener("pointermove",moveGhost);
-  window.removeEventListener("pointerup",dropPiece);
-}
-
-function placePiece(img,slot,index){
-  slot.dataset.filled="1";
-  const p=document.createElement("img");
-  p.src=img.src;
-  p.className="piece";
-  p.style.position="absolute";
-  Object.assign(p.style,{
-    left:slot.style.left,
-    top:slot.style.top,
-    width:slot.style.width,
-    height:slot.style.height,
-    objectFit:"contain",
-    pointerEvents:"none"
+  el.addEventListener("pointermove", e=>{
+    if(!dragging || dragging!==el) return;
+    const gx = e.clientX - offsetX - game.getBoundingClientRect().left;
+    const gy = e.clientY - offsetY - game.getBoundingClientRect().top;
+    dragging.style.left = gx+"px";
+    dragging.style.top = gy+"px";
   });
-  board.appendChild(p);
-  slot.classList.add("correct");
-  img.style.visibility="hidden";
-  checkWin();
+  el.addEventListener("pointerup", e=>{
+    if(!dragging || dragging!==el) return;
+    const rect = game.getBoundingClientRect();
+    const gx = (e.clientX - rect.left - offsetX)/rect.width;
+    const gy = (e.clientY - rect.top - offsetY)/rect.height;
+    const tx = parseFloat(el.dataset.correctX);
+    const ty = parseFloat(el.dataset.correctY);
+    const dist = Math.hypot(gx-tx, gy-ty);
+    if(dist<0.05){
+      el.style.left = (tx*100)+"%";
+      el.style.top = (ty*100)+"%";
+      el.dataset.placed="1";
+      el.classList.add("correct");
+      el.style.zIndex=1;
+      checkWin();
+    }
+    dragging=null;
+  });
 }
 
 function checkWin(){
-  const filled=slots.filter(s=>s.dataset.filled).length;
-  if(filled===PIECES.length){
-    setTimeout(()=>alert("🎉 Tuyệt vời! Bạn đã ghép xong trái tim 💖"),200);
+  const allPlaced = pieces.every(p=>p.dataset.placed==="1");
+  if(allPlaced){
+    setTimeout(()=>{
+      msg.classList.add("show");
+    },400);
   }
 }
 
-// nút chức năng
-document.getElementById("shuffle").onclick=()=>{
-  const arr=[...tray.children];
-  arr.sort(()=>Math.random()-0.5).forEach(c=>tray.appendChild(c));
-};
-document.getElementById("reset").onclick=()=>{
-  tray.querySelectorAll("img").forEach(i=>i.style.visibility="visible");
-  board.querySelectorAll(".piece").forEach(p=>p.remove());
-  slots.forEach(s=>{s.classList.remove("correct");delete s.dataset.filled;});
-};
-let show=true;
-document.getElementById("toggle").onclick=()=>{
-  show=!show;
-  board.style.opacity=show?1:0.1;
-};
-
+restartBtn.onclick = ()=>createPieces();
 createPieces();
 </script>
 </body>
