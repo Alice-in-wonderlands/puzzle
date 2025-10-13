@@ -50,18 +50,18 @@
         <button id="resetBtn" class="secondary">Đặt lại</button>
         <button id="showBtn" class="secondary">Hiện/ẩn ảnh gốc</button>
       </div>
-      <p style="margin-top:10px;font-size:13px;color:#555">Đặt 14 mảnh vào đúng vị trí. Tên file: <code>puzzle.jpg</code>, <code>p1.jpg</code> ... <code>p14.jpg</code>. Đặt tất cả trong cùng thư mục với file này.</p>
+      <p style="margin-top:10px;font-size:13px;color:#555">Đặt 14 mảnh vào đúng vị trí. Tên file: <code>puzzle.png</code>, <code>p1.png</code> ... <code>p14.png</code>. Đặt tất cả trong cùng thư mục với file này.</p>
     </aside>
   </div>
 
   <script>
   // ====== CẤU HÌNH ======
   // Tên file background và 14 mảnh (p1..p14)
-  const BG = 'puzzle.jpg';
-  const PIECES = Array.from({length:14},(_,i)=>`p${i+1}.jpg`);
+  const BG = 'puzzle.png';
+  const PIECES = Array.from({length:14},(_,i)=>`p${i+1}.png`);
 
   // Mảng vị trí đích cho từng mảnh (x, y, width, height) theo tỉ lệ so với kích thước board (0..1)
-  // Bạn có thể điều chỉnh các giá trị này để phù hợp chính xác với puzzle.jpg
+  // Bạn có thể điều chỉnh các giá trị này để phù hợp chính xác với puzzle.png
   const TARGETS = [
     // Example layout: we split image into 7 columns x 2 rows (14 mảnh). Tweak if cần.
   ];
