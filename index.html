@@ -1,276 +1,238 @@
 <!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Trò chơi ghép hình trái tim 💖</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      background: #fafafa;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-    }
-
-    h1 {
-      margin-bottom: 10px;
-    }
-
-    .board {
-      position: relative;
-      width: 600px;
-      height: 600px;
-      border: 3px solid #ccc;
-      border-radius: 16px;
-      background: #fff;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-      overflow: hidden;
-      background-image: url("puzzle.png");
-      background-size: cover;
-      background-position: center;
-      transition: opacity 0.3s;
-    }
-
-    .slot {
-      position: absolute;
-      border: 2px dashed transparent;
-      transition: border-color 0.2s;
-    }
-
-    .slot.correct {
-      border-color: #22c55e;
-    }
-
-    .tray {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 20px;
-      justify-content: center;
-      max-width: 640px;
-    }
-
-    .piece {
-      width: 130px;
-      height: 130px;
-      object-fit: contain;
-      cursor: grab;
-      user-select: none;
-      transition: transform 0.1s;
-    }
-
-    .piece:active {
-      transform: scale(1.1);
-      cursor: grabbing;
-    }
-
-    button {
-      margin: 8px;
-      padding: 8px 14px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      color: white;
-      background: #3b82f6;
-    }
-
-    button.secondary { background: #64748b; }
-
-    .ghost {
-      position: fixed;
-      pointer-events: none;
-      z-index: 1000;
-      width: 130px;
-      height: 130px;
-      object-fit: contain;
-      opacity: 0.9;
-      transform: scale(1.1);
-    }
-
-    @media (max-width:700px){
-      .board{width:90vw;height:90vw;}
-      .piece{width:22vw;height:22vw;}
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Ghép hình trái tim 💖</title>
+<style>
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: #f9fafb;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  h1 {margin-bottom: 12px;}
+  .board {
+    position: relative;
+    width: 700px;
+    height: 700px;
+    background: #fff;
+    border: 3px solid #ddd;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    overflow: hidden;
+    background-image: url("puzzle.png");
+    background-size: cover;
+    background-position: center;
+    transition: opacity 0.3s;
+  }
+  .slot {
+    position: absolute;
+    border: 2px dashed transparent;
+    transition: border-color 0.2s;
+  }
+  .slot.correct {border-color: #22c55e;}
+  .tray {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: center;
+    max-width: 720px;
+  }
+  .piece {
+    width: 130px;
+    height: 130px;
+    object-fit: contain;
+    cursor: grab;
+    user-select: none;
+  }
+  .ghost {
+    position: fixed;
+    pointer-events: none;
+    z-index: 1000;
+    width: 130px;
+    height: 130px;
+    object-fit: contain;
+    opacity: 0.9;
+    transform: scale(1.1);
+  }
+  button {
+    margin: 8px;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    color: white;
+    background: #3b82f6;
+  }
+  button.secondary { background: #64748b; }
+  @media (max-width:700px){
+    .board{width:90vw;height:90vw;}
+    .piece{width:22vw;height:22vw;}
+  }
+</style>
 </head>
 <body>
-  <h1>🧩 Ghép hình trái tim 💖</h1>
-  <div class="board" id="board"></div>
+<h1>🧩 Ghép hình trái tim 💖</h1>
+<div class="board" id="board"></div>
+<div class="tray" id="tray"></div>
+<div>
+  <button id="shuffle">Xáo trộn</button>
+  <button id="reset" class="secondary">Đặt lại</button>
+  <button id="toggle" class="secondary">Hiện / ẩn ảnh gốc</button>
+</div>
 
-  <div class="tray" id="tray"></div>
+<script>
+const BG = "puzzle.png";
+const PIECES = Array.from({length:14},(_,i)=>`p${i+1}.png`);
 
-  <div>
-    <button id="shuffle">Xáo trộn</button>
-    <button id="reset" class="secondary">Đặt lại</button>
-    <button id="toggle" class="secondary">Hiện / ẩn ảnh gốc</button>
-  </div>
+// layout tạm thời theo dáng trái tim (toạ độ tương đối)
+const TARGETS = [
+  {x:0.05,y:0.15,w:0.22,h:0.20}, // p1
+  {x:0.05,y:0.36,w:0.22,h:0.20}, // p2
+  {x:0.05,y:0.57,w:0.22,h:0.20}, // p3
 
-  <script>
-    const BOARD_SIZE = 600;
-    const COLS = 4;
-    const ROWS = 4;
-    const W = 1 / COLS;
-    const H = 1 / ROWS;
+  {x:0.28,y:0.05,w:0.22,h:0.18}, // p4
+  {x:0.28,y:0.24,w:0.22,h:0.18}, // p5
+  {x:0.28,y:0.43,w:0.22,h:0.18}, // p6
+  {x:0.28,y:0.62,w:0.22,h:0.18}, // p7
 
-    const BG = "puzzle.png";
-    const PIECES = Array.from({ length: 14 }, (_, i) => `p${i + 1}.png`);
+  {x:0.50,y:0.05,w:0.22,h:0.18}, // p8
+  {x:0.50,y:0.24,w:0.22,h:0.18}, // p9
+  {x:0.50,y:0.43,w:0.22,h:0.18}, // p10
+  {x:0.50,y:0.62,w:0.22,h:0.18}, // p11
 
-    // Xác định vị trí mảnh trên lưới 4x4 (bỏ 2 ô trống trên cùng giữa tim)
-    const TARGETS = [
-      {x:0, y:0, w:W, h:H},       // p1
-      {x:0, y:H, w:W, h:H},       // p2
-      {x:0, y:2*H, w:W, h:H},     // p3
-      {x:W, y:0, w:W, h:H},       // p4
-      {x:W, y:H, w:W, h:H},       // p5
-      {x:W, y:2*H, w:W, h:H},     // p6
-      {x:W, y:3*H, w:W, h:H},     // p7
-      {x:2*W, y:0, w:W, h:H},     // p8
-      {x:2*W, y:H, w:W, h:H},     // p9
-      {x:2*W, y:2*H, w:W, h:H},   // p10
-      {x:2*W, y:3*H, w:W, h:H},   // p11
-      {x:3*W, y:0, w:W, h:H},     // p12
-      {x:3*W, y:H, w:W, h:H},     // p13
-      {x:3*W, y:2*H, w:W, h:H},   // p14
-    ];
+  {x:0.72,y:0.15,w:0.22,h:0.20}, // p12
+  {x:0.72,y:0.36,w:0.22,h:0.20}, // p13
+  {x:0.72,y:0.57,w:0.22,h:0.20}, // p14
+];
 
-    const board = document.getElementById("board");
-    const tray = document.getElementById("tray");
+const board = document.getElementById("board");
+const tray = document.getElementById("tray");
 
-    // Tạo các slot vị trí đích
-    const slots = TARGETS.map((t, i) => {
-      const div = document.createElement("div");
-      div.className = "slot";
-      div.dataset.index = i;
-      Object.assign(div.style, {
-        left: `${t.x * 100}%`,
-        top: `${t.y * 100}%`,
-        width: `${t.w * 100}%`,
-        height: `${t.h * 100}%`
-      });
-      board.appendChild(div);
-      return div;
-    });
+// tạo slot vị trí
+const slots = TARGETS.map((t,i)=>{
+  const div=document.createElement("div");
+  div.className="slot";
+  div.dataset.index=i;
+  Object.assign(div.style,{
+    left:`${t.x*100}%`,
+    top:`${t.y*100}%`,
+    width:`${t.w*100}%`,
+    height:`${t.h*100}%`
+  });
+  board.appendChild(div);
+  return div;
+});
 
-    // Tạo mảnh trong khay
-    let pieces = [];
-    function createPieces() {
-      tray.innerHTML = "";
-      pieces = PIECES.map((src, i) => {
-        const img = document.createElement("img");
-        img.src = src;
-        img.className = "piece";
-        img.dataset.index = i;
-        tray.appendChild(img);
-        makeDraggable(img);
-        return img;
-      });
-    }
+let pieces=[];
 
-    // Drag-drop
-    let dragging = null;
-    let ghost = null;
-    let offset = {x:0, y:0};
+function createPieces(){
+  tray.innerHTML="";
+  pieces = PIECES.map((src,i)=>{
+    const img=document.createElement("img");
+    img.src=src;
+    img.className="piece";
+    img.dataset.index=i;
+    tray.appendChild(img);
+    makeDraggable(img);
+    return img;
+  });
+}
 
-    function makeDraggable(img){
-      img.addEventListener("pointerdown", e => {
-        e.preventDefault();
-        dragging = img;
-        const r = img.getBoundingClientRect();
-        offset.x = e.clientX - r.left;
-        offset.y = e.clientY - r.top;
-        ghost = img.cloneNode();
-        ghost.className = "ghost";
-        document.body.appendChild(ghost);
-        moveGhost(e);
-        window.addEventListener("pointermove", moveGhost);
-        window.addEventListener("pointerup", dropPiece);
-      });
-    }
+let dragging=null, ghost=null, offset={x:0,y:0};
 
-    function moveGhost(e){
-      if(!ghost) return;
-      ghost.style.left = e.clientX - offset.x + "px";
-      ghost.style.top = e.clientY - offset.y + "px";
-    }
+function makeDraggable(img){
+  img.addEventListener("pointerdown",e=>{
+    e.preventDefault();
+    dragging=img;
+    const r=img.getBoundingClientRect();
+    offset.x=e.clientX-r.left;
+    offset.y=e.clientY-r.top;
+    ghost=img.cloneNode();
+    ghost.className="ghost";
+    document.body.appendChild(ghost);
+    moveGhost(e);
+    window.addEventListener("pointermove",moveGhost);
+    window.addEventListener("pointerup",dropPiece);
+  });
+}
 
-    function dropPiece(e){
-      if(!dragging) return;
-      const rectBoard = board.getBoundingClientRect();
-      const x = e.clientX - rectBoard.left;
-      const y = e.clientY - rectBoard.top;
+function moveGhost(e){
+  if(!ghost) return;
+  ghost.style.left=e.clientX-offset.x+"px";
+  ghost.style.top=e.clientY-offset.y+"px";
+}
 
-      // tìm slot gần nhất
-      let best = null;
-      let minDist = Infinity;
-      slots.forEach((s, i)=>{
-        const r = s.getBoundingClientRect();
-        const cx = r.left + r.width/2;
-        const cy = r.top + r.height/2;
-        const d = Math.hypot(e.clientX - cx, e.clientY - cy);
-        if(d < minDist){ minDist = d; best = {slot:s, i}; }
-      });
+function dropPiece(e){
+  if(!dragging) return;
+  const rectBoard=board.getBoundingClientRect();
+  const x=e.clientX-rectBoard.left;
+  const y=e.clientY-rectBoard.top;
+  let best=null,min=Infinity;
+  slots.forEach((s,i)=>{
+    const r=s.getBoundingClientRect();
+    const cx=r.left+r.width/2,cy=r.top+r.height/2;
+    const d=Math.hypot(e.clientX-cx,e.clientY-cy);
+    if(d<min){min=d;best={slot:s,i};}
+  });
+  if(best&&min<80&&!best.slot.dataset.filled){
+    placePiece(dragging,best.slot,best.i);
+  }
+  ghost.remove();
+  ghost=null; dragging=null;
+  window.removeEventListener("pointermove",moveGhost);
+  window.removeEventListener("pointerup",dropPiece);
+}
 
-      const threshold = 60;
-      if(best && minDist < threshold && !best.slot.dataset.filled){
-        // gắn vào board
-        placePiece(dragging, best.slot, best.i);
-      }
+function placePiece(img,slot,index){
+  slot.dataset.filled="1";
+  const p=document.createElement("img");
+  p.src=img.src;
+  p.className="piece";
+  p.style.position="absolute";
+  Object.assign(p.style,{
+    left:slot.style.left,
+    top:slot.style.top,
+    width:slot.style.width,
+    height:slot.style.height,
+    objectFit:"contain",
+    pointerEvents:"none"
+  });
+  board.appendChild(p);
+  slot.classList.add("correct");
+  img.style.visibility="hidden";
+  checkWin();
+}
 
-      ghost.remove();
-      ghost = null;
-      dragging = null;
-      window.removeEventListener("pointermove", moveGhost);
-      window.removeEventListener("pointerup", dropPiece);
-    }
+function checkWin(){
+  const filled=slots.filter(s=>s.dataset.filled).length;
+  if(filled===PIECES.length){
+    setTimeout(()=>alert("🎉 Tuyệt vời! Bạn đã ghép xong trái tim 💖"),200);
+  }
+}
 
-    function placePiece(img, slot, index){
-      slot.dataset.filled = "1";
-      const piece = document.createElement("img");
-      piece.src = img.src;
-      piece.className = "piece";
-      piece.style.position = "absolute";
-      Object.assign(piece.style, {
-        left: slot.style.left,
-        top: slot.style.top,
-        width: slot.style.width,
-        height: slot.style.height,
-        objectFit: "contain",
-        pointerEvents: "none"
-      });
-      board.appendChild(piece);
-      slot.classList.add("correct");
-      img.style.visibility = "hidden";
-      checkWin();
-    }
+// nút chức năng
+document.getElementById("shuffle").onclick=()=>{
+  const arr=[...tray.children];
+  arr.sort(()=>Math.random()-0.5).forEach(c=>tray.appendChild(c));
+};
+document.getElementById("reset").onclick=()=>{
+  tray.querySelectorAll("img").forEach(i=>i.style.visibility="visible");
+  board.querySelectorAll(".piece").forEach(p=>p.remove());
+  slots.forEach(s=>{s.classList.remove("correct");delete s.dataset.filled;});
+};
+let show=true;
+document.getElementById("toggle").onclick=()=>{
+  show=!show;
+  board.style.opacity=show?1:0.1;
+};
 
-    function checkWin(){
-      const filled = slots.filter(s=>s.dataset.filled).length;
-      if(filled === PIECES.length){
-        setTimeout(()=>alert("🎉 Chúc mừng, bạn đã hoàn thành hình trái tim! 💖"),200);
-      }
-    }
-
-    // Nút chức năng
-    document.getElementById("shuffle").onclick = () => {
-      const arr = [...tray.children];
-      arr.sort(()=>Math.random()-0.5).forEach(c=>tray.appendChild(c));
-    };
-    document.getElementById("reset").onclick = () => {
-      tray.querySelectorAll("img").forEach(img=>img.style.visibility="visible");
-      board.querySelectorAll(".piece").forEach(p=>p.remove());
-      slots.forEach(s=>{s.classList.remove("correct"); delete s.dataset.filled;});
-    };
-    let show = true;
-    document.getElementById("toggle").onclick = () => {
-      show = !show;
-      board.style.opacity = show ? 1 : 0.1;
-    };
-
-    // Khởi tạo
-    createPieces();
-  </script>
+createPieces();
+</script>
 </body>
 </html>
