@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Puzzle Game (14 mảnh)</title>
+  <style>
+    :root{--tray-width:260px}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; margin:0; display:flex; min-height:100vh}
+    .container{display:flex;flex:1;gap:20px;padding:20px}
+    .board-wrap{flex:1;display:flex;align-items:center;justify-content:center}
+    .board{position:relative;width:720px;height:480px;border:2px solid #ddd;background:#f7f7f7;box-shadow:0 6px 18px rgba(0,0,0,.08);overflow:hidden}
+    .board .bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:contrast(.95);}
+
+    /* slots (invisible targets) */
+    .slot{position:absolute;border:2px dashed rgba(255,255,255,0);transition:box-shadow .12s}
+    .slot.correct{box-shadow:0 0 0 3px rgba(56,161,105,.14);}
+
+    /* tray with shuffled pieces */
+    .tray{width:var(--tray-width);min-width:220px;border-left:1px solid #eee;padding:16px;box-sizing:border-box;background:#fff}
+    .tray h3{margin:0 0 8px 0;font-size:16px}
+    .pieces{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+    .piece{user-select:none;touch-action:none;width:100%;height:80px;object-fit:cover;border-radius:6px;box-shadow:0 6px 14px rgba(0,0,0,.08);cursor:grab}
+    .piece.locked{opacity:.6;cursor:default}
+
+    .controls{display:flex;gap:8px;margin-top:12px}
+    button{padding:8px 10px;border:0;background:#0ea5a4;color:white;border-radius:8px;cursor:pointer}
+    button.secondary{background:#64748b}
+
+    /* draggable clone */
+    .ghost{position:fixed;pointer-events:none;z-index:9999;width:140px;height:100px;object-fit:cover;border-radius:6px;box-shadow:0 12px 30px rgba(0,0,0,.2)}
+
+    /* responsive */
+    @media (max-width:900px){.container{flex-direction:column}.tray{width:100%;border-left:0;border-top:1px solid #eee}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="board-wrap">
+      <div id="board" class="board" aria-label="Puzzle board">
+        <div id="bg" class="bg"></div>
+        <!-- slots will be injected here -->
+      </div>
+    </div>
+    <aside class="tray">
+      <h3>Nguyên liệu</h3>
+      <div id="pieces" class="pieces"></div>
+      <div class="controls">
+        <button id="shuffleBtn">Xáo</button>
+        <button id="resetBtn" class="secondary">Đặt lại</button>
+        <button id="showBtn" class="secondary">Hiện/ẩn ảnh gốc</button>
+      </div>
+      <p style="margin-top:10px;font-size:13px;color:#555">Đặt 14 mảnh vào đúng vị trí. Tên file: <code>puzzle.jpg</code>, <code>p1.jpg</code> ... <code>p14.jpg</code>. Đặt tất cả trong cùng thư mục với file này.</p>
+    </aside>
+  </div>
+
+  <script>
+  // ====== CẤU HÌNH ======
+  // Tên file background và 14 mảnh (p1..p14)
+  const BG = 'puzzle.jpg';
+  const PIECES = Array.from({length:14},(_,i)=>`p${i+1}.jpg`);
+
+  // Mảng vị trí đích cho từng mảnh (x, y, width, height) theo tỉ lệ so với kích thước board (0..1)
+  // Bạn có thể điều chỉnh các giá trị này để phù hợp chính xác với puzzle.jpg
+  const TARGETS = [
+    // Example layout: we split image into 7 columns x 2 rows (14 mảnh). Tweak if cần.
+  ];
+
+  // Auto-generate a 7x2 layout (7 columns, 2 rows) to hold 14 pieces
+  (function generateTargets(){
+    const cols=7, rows=2;
+    for(let r=0;r<rows;r++){
+      for(let c=0;c<cols;c++){
+        TARGETS.push({x:c/cols, y:r/rows, w:1/cols, h:1/rows});
+      }
+    }
+  })();
+
+  // ====== THỰC THI ======
+  const board = document.getElementById('board');
+  const bg = document.getElementById('bg');
+  const piecesEl = document.getElementById('pieces');
+  const shuffleBtn = document.getElementById('shuffleBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const showBtn = document.getElementById('showBtn');
+
+  bg.style.backgroundImage = `url(${BG})`;
+
+  // create slots
+  const slots = [];
+  function createSlots(){
+    TARGETS.forEach((t,i)=>{
+      const div = document.createElement('div');
+      div.className = 'slot';
+      div.dataset.index = i;
+      // position relative to board size via JS when rendering/resizing
+      board.appendChild(div);
+      slots.push({el:div,target:t,index:i});
+    });
+    layoutSlots();
+  }
+
+  // layout slots according to current board size
+  function layoutSlots(){
+    const rect = board.getBoundingClientRect();
+    slots.forEach(s=>{
+      const t = s.target;
+      const left = t.x * rect.width;
+      const top = t.y * rect.height;
+      const w = t.w * rect.width;
+      const h = t.h * rect.height;
+      Object.assign(s.el.style,{left:left+'px',top:top+'px',width:w+'px',height:h+'px'});
+    });
+  }
+
+  // create piece pool
+  let pieceObjs = []; // {img, name, index, placed}
+  function createPieces(){
+    piecesEl.innerHTML=''; pieceObjs=[];
+    PIECES.forEach((src,i)=>{
+      const img = document.createElement('img');
+      img.src = src; img.className='piece'; img.draggable=false; img.dataset.index=i;
+      img.alt = `Piece ${i+1}`;
+      piecesEl.appendChild(img);
+      pieceObjs.push({img,src,index:i,placed:false});
+      makeDraggable(img);
+    });
+  }
+
+  // Drag & drop with pointer events and ghost image
+  let ghost = null; let dragging = null; let offset = {x:0,y:0};
+
+  function makeDraggable(img){
+    img.addEventListener('pointerdown', startDrag);
+  }
+
+  function startDrag(e){
+    if(e.button && e.button!==0) return;
+    const img = e.currentTarget;
+    const idx = Number(img.dataset.index);
+    const obj = pieceObjs[idx];
+    if(obj.placed) return; // already placed
+
+    dragging = obj;
+    img.setPointerCapture(e.pointerId);
+    const r = img.getBoundingClientRect();
+    offset.x = e.clientX - r.left; offset.y = e.clientY - r.top;
+
+    // create ghost
+    ghost = img.cloneNode(); ghost.className='ghost'; document.body.appendChild(ghost);
+    moveGhost(e.clientX, e.clientY);
+
+    function onMove(ev){ moveGhost(ev.clientX, ev.clientY); }
+    function onUp(ev){ endDrag(ev); img.removeEventListener('pointermove', onMove); img.removeEventListener('pointerup', onUp); }
+
+    img.addEventListener('pointermove', onMove);
+    img.addEventListener('pointerup', onUp);
+  }
+
+  function moveGhost(cx,cy){
+    const w = ghost.offsetWidth; const h = ghost.offsetHeight;
+    ghost.style.left = (cx - offset.x) + 'px';
+    ghost.style.top = (cy - offset.y) + 'px';
+  }
+
+  function endDrag(e){
+    if(!dragging) return;
+    const cx = e.clientX; const cy = e.clientY;
+    // check nearest slot
+    const boardRect = board.getBoundingClientRect();
+    let placed = false;
+    for(const s of slots){
+      const rect = s.el.getBoundingClientRect();
+      const dx = cx - (rect.left + rect.width/2);
+      const dy = cy - (rect.top + rect.height/2);
+      const dist = Math.hypot(dx,dy);
+      const threshold = Math.max(rect.width,rect.height) * 0.5; // snap threshold
+      if(dist < threshold && !isSlotOccupied(s.index)){
+        // place
+        snapToSlot(dragging, s);
+        placed = true; break;
+      }
+    }
+
+    if(!placed){
+      // nothing: return piece to tray
+      // nothing to do because tray image remains
+    }
+
+    // cleanup
+    if(ghost && ghost.parentNode) ghost.parentNode.removeChild(ghost);
+    ghost = null; dragging = null;
+    checkWin();
+  }
+
+  function isSlotOccupied(slotIndex){
+    return pieceObjs.some(p=>p.placed && p.slotIndex===slotIndex);
+  }
+
+  function snapToSlot(piece, slot){
+    piece.placed = true; piece.slotIndex = slot.index;
+    // visually add a placed image inside board
+    const img = document.createElement('img');
+    img.src = piece.src; img.className = 'piece locked'; img.style.position='absolute';
+    // fit to slot
+    const rect = slot.el.getBoundingClientRect();
+    const boardRect = board.getBoundingClientRect();
+    img.style.left = (rect.left - boardRect.left) + 'px';
+    img.style.top = (rect.top - boardRect.top) + 'px';
+    img.style.width = rect.width + 'px';
+    img.style.height = rect.height + 'px';
+    img.style.objectFit='cover';
+    board.appendChild(img);
+    // mark slot
+    slot.el.classList.add('correct');
+    // hide original from tray
+    const trayImg = piece.img; if(trayImg && trayImg.parentNode) trayImg.style.visibility='hidden';
+  }
+
+  function checkWin(){
+    const allPlaced = pieceObjs.length>0 && pieceObjs.every(p=>p.placed);
+    if(allPlaced){
+      setTimeout(()=>alert('Chúc mừng — bạn đã hoàn thành puzzle!'),200);
+    }
+  }
+
+  // shuffle: randomize order of pieces in tray
+  function shufflePieces(){
+    // show all tray imgs
+    pieceObjs.forEach(p=>{ if(p.img) { p.img.style.visibility='visible'; p.placed=false; delete p.slotIndex; }});
+    // remove placed images on board
+    board.querySelectorAll('img.locked').forEach(n=>n.remove());
+    board.querySelectorAll('.slot').forEach(s=>s.classList.remove('correct'));
+    // shuffle DOM order
+    for(let i=pieceObjs.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pieceObjs[i],pieceObjs[j]]=[pieceObjs[j],pieceObjs[i]]; }
+    piecesEl.innerHTML=''; pieceObjs.forEach((p,i)=>{ p.img.dataset.index=i; piecesEl.appendChild(p.img); });
+  }
+
+  function resetAll(){
+    pieceObjs.forEach(p=>{ if(p.img) { p.img.style.visibility='visible'; p.placed=false; delete p.slotIndex; }});
+    board.querySelectorAll('img.locked').forEach(n=>n.remove());
+    board.querySelectorAll('.slot').forEach(s=>s.classList.remove('correct'));
+  }
+
+  // show/hide bg
+  let bgVisible = true;
+  function toggleBg(){ bgVisible = !bgVisible; bg.style.opacity = bgVisible? '1':'0.06'; }
+
+  // events
+  shuffleBtn.addEventListener('click', shufflePieces);
+  resetBtn.addEventListener('click', resetAll);
+  showBtn.addEventListener('click', toggleBg);
+
+  // resize handler
+  window.addEventListener('resize', layoutSlots);
+
+  // init
+  createSlots();
+  createPieces();
+  shufflePieces();
+
+  // Accessibility: keyboard focus to first piece
+  piecesEl.querySelector('img')?.focus?.();
+  </script>
+</body>
+</html>
