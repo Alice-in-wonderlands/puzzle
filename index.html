@@ -1,211 +1,133 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>You Complete My Heart 💖</title>
-<style>
-  body {
-    margin: 0;
-    background: radial-gradient(circle at center, #ffe4ec, #fef6f8);
-    font-family: "Segoe UI", sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    height: 100vh;
-    overflow: hidden;
-  }
-  h1 {
-    margin: 16px;
-    font-weight: 600;
-    color: #e11d48;
-  }
-  #game {
-    position: relative;
-    width: 600px;
-    height: 600px;
-    border-radius: 20px;
-    background: white;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-    overflow: hidden;
-  }
-  .piece {
-    position: absolute;
-    width: 20%;
-    height: 20%;
-    background-image: url("puzzle.png");
-    background-size: 100% 100%;
-    cursor: grab;
-    transition: transform 0.2s;
-  }
-  .piece.correct {
-    cursor: default;
-    transform: scale(1);
-  }
-  .message {
-    position: absolute;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0);
-    text-align: center;
-    font-size: 2rem;
-    color: #e11d48;
-    font-weight: bold;
-    opacity: 0;
-    transition: all 0.6s ease;
-  }
-  .message.show {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 1;
-    animation: pulse 1s ease-in-out infinite alternate;
-  }
-  @keyframes pulse {
-    from { transform: translate(-50%, -50%) scale(1); }
-    to { transform: translate(-50%, -50%) scale(1.05); }
-  }
-  button {
-    margin-top: 20px;
-    background: #e11d48;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    padding: 10px 18px;
-    font-size: 1rem;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  }
-  button:hover { background: #be123c; }
-  @media (max-width:700px){
-    #game{width:90vw;height:90vw;}
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Xếp Hình Trái Tim</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #ffeef5;
+      text-align: center;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #d6336c;
+    }
+
+    #board, #pieces {
+      display: flex;
+      flex-wrap: wrap;
+      width: 300px;
+      margin: 20px auto;
+      position: relative;
+      justify-content: center;
+      border: 2px dashed #ccc;
+      min-height: 300px;
+      clip-path: path("M150 280 C70 210, 10 150, 50 80 C90 30, 150 60, 150 100 C150 60, 210 30, 250 80 C290 150, 230 210, 150 280 Z");
+      background-color: white;
+    }
+
+    .slot, .piece {
+      width: 100px;
+      height: 100px;
+      box-sizing: border-box;
+      border-radius: 15px;
+    }
+
+    .slot {
+      border: 1px solid #aaa;
+      background-color: #fff;
+    }
+
+    .piece {
+      background-image: url('sa1.jpg');
+      background-size: 300px 300px;
+      border: 1px solid #555;
+      cursor: grab;
+      clip-path: path("M150 280 C70 210, 10 150, 50 80 C90 30, 150 60, 150 100 C150 60, 210 30, 250 80 C290 150, 230 210, 150 280 Z");
+      transform: scale(0.33); /* Vì mỗi mảnh nhỏ hơn hình gốc */
+      transform-origin: top left;
+    }
+  </style>
 </head>
 <body>
-<h1>🧩 You Complete My Heart 💖</h1>
-<div id="game"></div>
-<div class="message" id="msg">
-  You complete my heart 💖<br>
-  <button id="restart">Chơi lại 💫</button>
-</div>
 
-<script>
-const game = document.getElementById("game");
-const msg = document.getElementById("msg");
-const restartBtn = document.getElementById("restart");
+  <h1>🧩 Xếp Hình Trái Tim</h1>
+  <p>Kéo các mảnh bên dưới vào khung trái tim để hoàn thành bức hình!</p>
 
-const NUM_PIECES = 15;
+  <div id="board"></div>
+  <div id="pieces"></div>
 
-// vị trí (tương đối) các mảnh theo hình trái tim đối xứng
-const heartPositions = [
-  {x:0.4,y:0.05}, {x:0.6,y:0.05},
-  {x:0.25,y:0.2}, {x:0.5,y:0.2}, {x:0.75,y:0.2},
-  {x:0.15,y:0.35}, {x:0.37,y:0.35}, {x:0.63,y:0.35}, {x:0.85,y:0.35},
-  {x:0.25,y:0.55}, {x:0.5,y:0.55}, {x:0.75,y:0.55},
-  {x:0.37,y:0.75}, {x:0.63,y:0.75},
-  {x:0.5,y:0.9}
-];
+  <script>
+    const board = document.getElementById("board");
+    const piecesContainer = document.getElementById("pieces");
+    const gridSize = 3;
+    const pieceSize = 100;
 
-let pieces = [];
+    function createSlots() {
+      for (let i = 0; i < gridSize * gridSize; i++) {
+        const slot = document.createElement("div");
+        slot.classList.add("slot");
+        slot.dataset.index = i;
+        slot.addEventListener("dragover", (e) => e.preventDefault());
+        slot.addEventListener("drop", handleDrop);
+        board.appendChild(slot);
+      }
+    }
 
-function createPieces(){
-  game.innerHTML = "";
-  msg.classList.remove("show");
-  pieces = [];
+    function createPieces() {
+      const positions = [];
 
-  heartPositions.forEach((pos, i) => {
-    const p = document.createElement("div");
-    p.className = "piece";
-    // clip-path dạng trái tim phân vùng
-    const r = 50; // bán kính cơ bản để tạo biên cong mềm
-    p.style.clipPath = heartClipPath(i);
-    // vị trí random lúc đầu
-    const rx = Math.random()*80+10;
-    const ry = Math.random()*70+20;
-    p.style.left = rx+"%";
-    p.style.top = ry+"%";
-    p.dataset.correctX = pos.x;
-    p.dataset.correctY = pos.y;
-    p.dataset.placed = "0";
-    p.style.backgroundPosition = `${-pos.x*100}% ${-pos.y*100}%`;
-    makeDraggable(p);
-    game.appendChild(p);
-    pieces.push(p);
-  });
-}
+      for (let row = 0; row < gridSize; row++) {
+        for (let col = 0; col < gridSize; col++) {
+          positions.push({ row, col });
+        }
+      }
 
-function heartClipPath(i){
-  // tạo hình mảnh tim đối xứng (dạng phân vùng)
-  const sectors = [
-    "polygon(40% 0%,60% 0%,70% 20%,50% 40%,30% 20%)",
-    "polygon(60% 0%,80% 10%,90% 30%,70% 40%,50% 20%)",
-    "polygon(20% 20%,40% 20%,50% 40%,30% 60%,10% 40%)",
-    "polygon(40% 20%,60% 20%,70% 40%,50% 60%,30% 40%)",
-    "polygon(60% 20%,80% 20%,90% 40%,70% 60%,50% 40%)",
-    "polygon(10% 40%,30% 40%,40% 60%,20% 80%,0% 60%)",
-    "polygon(30% 40%,50% 40%,60% 60%,40% 80%,20% 60%)",
-    "polygon(50% 40%,70% 40%,80% 60%,60% 80%,40% 60%)",
-    "polygon(70% 40%,90% 40%,100% 60%,80% 80%,60% 60%)",
-    "polygon(20% 60%,40% 60%,50% 80%,30% 100%,10% 80%)",
-    "polygon(40% 60%,60% 60%,70% 80%,50% 100%,30% 80%)",
-    "polygon(60% 60%,80% 60%,90% 80%,70% 100%,50% 80%)",
-    "polygon(30% 80%,50% 80%,55% 90%,45% 100%,25% 90%)",
-    "polygon(50% 80%,70% 80%,75% 90%,55% 100%,45% 90%)",
-    "polygon(40% 90%,60% 90%,50% 100%)"
-  ];
-  return sectors[i % sectors.length];
-}
+      // Shuffle pieces
+      positions.sort(() => Math.random() - 0.5);
 
-let dragging=null, offsetX=0, offsetY=0;
+      positions.forEach((pos) => {
+        const piece = document.createElement("div");
+        piece.classList.add("piece");
+        piece.draggable = true;
+        piece.style.backgroundPosition = `-${pos.col * pieceSize}px -${pos.row * pieceSize}px`;
+        piece.dataset.correctIndex = pos.row * gridSize + pos.col;
 
-function makeDraggable(el){
-  el.addEventListener("pointerdown", e=>{
-    if(el.dataset.placed==="1") return;
-    dragging = el;
-    const rect = el.getBoundingClientRect();
-    offsetX = e.clientX - rect.left;
-    offsetY = e.clientY - rect.top;
-    el.style.zIndex = 1000;
-    el.setPointerCapture(e.pointerId);
-  });
-  el.addEventListener("pointermove", e=>{
-    if(!dragging || dragging!==el) return;
-    const gx = e.clientX - offsetX - game.getBoundingClientRect().left;
-    const gy = e.clientY - offsetY - game.getBoundingClientRect().top;
-    dragging.style.left = gx+"px";
-    dragging.style.top = gy+"px";
-  });
-  el.addEventListener("pointerup", e=>{
-    if(!dragging || dragging!==el) return;
-    const rect = game.getBoundingClientRect();
-    const gx = (e.clientX - rect.left - offsetX)/rect.width;
-    const gy = (e.clientY - rect.top - offsetY)/rect.height;
-    const tx = parseFloat(el.dataset.correctX);
-    const ty = parseFloat(el.dataset.correctY);
-    const dist = Math.hypot(gx-tx, gy-ty);
-    if(dist<0.05){
-      el.style.left = (tx*100)+"%";
-      el.style.top = (ty*100)+"%";
-      el.dataset.placed="1";
-      el.classList.add("correct");
-      el.style.zIndex=1;
+        piece.addEventListener("dragstart", (e) => {
+          e.dataTransfer.setData("text/plain", piece.dataset.correctIndex);
+        });
+
+        piecesContainer.appendChild(piece);
+      });
+    }
+
+    function handleDrop(e) {
+      const correctIndex = e.dataTransfer.getData("text/plain");
+      const draggedPiece = document.querySelector(`.piece[data-correct-index="${correctIndex}"]`);
+      if (this.children.length > 0) return;
+      this.appendChild(draggedPiece);
       checkWin();
     }
-    dragging=null;
-  });
-}
 
-function checkWin(){
-  const allPlaced = pieces.every(p=>p.dataset.placed==="1");
-  if(allPlaced){
-    setTimeout(()=>{
-      msg.classList.add("show");
-    },400);
-  }
-}
+    function checkWin() {
+      const slots = document.querySelectorAll(".slot");
+      let isWin = true;
+      slots.forEach((slot, index) => {
+        const piece = slot.querySelector(".piece");
+        if (!piece || parseInt(piece.dataset.correctIndex) !== index) {
+          isWin = false;
+        }
+      });
+      if (isWin) {
+        setTimeout(() => alert("🎉 Bạn đã ghép xong hình trái tim rồi!"), 100);
+      }
+    }
 
-restartBtn.onclick = ()=>createPieces();
-createPieces();
-</script>
+    createSlots();
+    createPieces();
+  </script>
 </body>
 </html>
