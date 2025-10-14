@@ -1,133 +1,239 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Xếp Hình Trái Tim</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Xếp Hình Trái Tim — Sửa lỗi</title>
   <style>
+    :root {
+      --size: 300px;
+      --cell: calc(var(--size) / 3);
+    }
+
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #ffeef5;
-      text-align: center;
-      padding: 20px;
+      font-family: "Segoe UI", Roboto, sans-serif;
+      background: #fff6fb;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+      padding: 24px;
     }
 
-    h1 {
-      color: #d6336c;
+    h1 { color: #d6336c; margin: 0; }
+    p { margin: 0 0 12px 0; }
+
+    /* Board (heart-shaped) */
+    .board-wrap {
+      width: var(--size);
+      height: var(--size);
+      position: relative;
+      /* heart-ish clip-path (simple, works well cross-browser) */
+      clip-path: polygon(
+        50% 90%,
+        10% 55%,
+        10% 30%,
+        30% 10%,
+        50% 30%,
+        70% 10%,
+        90% 30%,
+        90% 55%
+      );
+      background: linear-gradient(180deg, #fff, #ffeaf2);
+      border: 2px solid #ffd6e6;
+      box-shadow: 0 6px 18px rgba(198, 38, 112, 0.12);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    #board, #pieces {
+    /* slots laid out in the grid */
+    .slot {
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      border: 1px dashed rgba(150,150,150,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: transparent;
+      /* allow drops even inside clipped area */
+      pointer-events: auto;
+    }
+
+    .slot.highlight { outline: 3px dashed rgba(214,51,108,0.45); }
+
+    /* pieces area */
+    #pieces {
+      width: var(--size);
       display: flex;
       flex-wrap: wrap;
-      width: 300px;
-      margin: 20px auto;
-      position: relative;
+      gap: 8px;
       justify-content: center;
-      border: 2px dashed #ccc;
-      min-height: 300px;
-      clip-path: path("M150 280 C70 210, 10 150, 50 80 C90 30, 150 60, 150 100 C150 60, 210 30, 250 80 C290 150, 230 210, 150 280 Z");
-      background-color: white;
-    }
-
-    .slot, .piece {
-      width: 100px;
-      height: 100px;
-      box-sizing: border-box;
-      border-radius: 15px;
-    }
-
-    .slot {
-      border: 1px solid #aaa;
-      background-color: #fff;
     }
 
     .piece {
-      background-image: url('sa1.jpg');
-      background-size: 300px 300px;
-      border: 1px solid #555;
+      width: calc(var(--cell) - 8px);
+      height: calc(var(--cell) - 8px);
+      box-sizing: border-box;
+      border: 1px solid #8b8b8b;
+      background-image: url("sa1.jpg");
+      background-size: var(--size) var(--size); /* full image scaled to board */
       cursor: grab;
-      clip-path: path("M150 280 C70 210, 10 150, 50 80 C90 30, 150 60, 150 100 C150 60, 210 30, 250 80 C290 150, 230 210, 150 280 Z");
-      transform: scale(0.33); /* Vì mỗi mảnh nhỏ hơn hình gốc */
-      transform-origin: top left;
+      user-select: none;
     }
+
+    /* when a piece is placed inside a slot, make it fill the slot */
+    .slot .piece {
+      width: 100%;
+      height: 100%;
+      border: none;
+      cursor: default;
+    }
+
+    /* small helpers */
+    .row { display:flex; gap:8px; }
+    button { background:#d6336c; color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; }
   </style>
 </head>
 <body>
-
   <h1>🧩 Xếp Hình Trái Tim</h1>
-  <p>Kéo các mảnh bên dưới vào khung trái tim để hoàn thành bức hình!</p>
+  <p>Kéo mảnh bên dưới vào khung trái tim. Nếu lỗi, load lại trang và thử again.</p>
 
-  <div id="board"></div>
-  <div id="pieces"></div>
+  <div class="board-wrap" id="board" aria-label="khung trái tim">
+    <!-- slots sẽ được tạo bằng JS -->
+  </div>
+
+  <div id="pieces" aria-label="mảnh ghép"></div>
+
+  <div style="margin-top:8px;">
+    <button id="shuffleBtn">Xáo lại mảnh</button>
+    <button id="resetBtn">Đặt lại</button>
+  </div>
 
   <script>
     const board = document.getElementById("board");
     const piecesContainer = document.getElementById("pieces");
     const gridSize = 3;
-    const pieceSize = 100;
+    const boardSize = 300; // px, tương ứng với --size
+    const cellSize = boardSize / gridSize;
 
+    // Tạo slots (3x3)
     function createSlots() {
+      board.innerHTML = "";
       for (let i = 0; i < gridSize * gridSize; i++) {
         const slot = document.createElement("div");
-        slot.classList.add("slot");
+        slot.className = "slot";
         slot.dataset.index = i;
-        slot.addEventListener("dragover", (e) => e.preventDefault());
+        slot.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          slot.classList.add("highlight");
+        });
+        slot.addEventListener("dragleave", () => slot.classList.remove("highlight"));
         slot.addEventListener("drop", handleDrop);
         board.appendChild(slot);
       }
     }
 
-    function createPieces() {
+    // Tạo pieces (dựa trên 3x3 phần của ảnh)
+    function createPieces(shuffle = true) {
+      piecesContainer.innerHTML = "";
       const positions = [];
-
-      for (let row = 0; row < gridSize; row++) {
-        for (let col = 0; col < gridSize; col++) {
-          positions.push({ row, col });
+      for (let r = 0; r < gridSize; r++) {
+        for (let c = 0; c < gridSize; c++) {
+          positions.push({ r, c, idx: r * gridSize + c });
         }
       }
 
-      // Shuffle pieces
-      positions.sort(() => Math.random() - 0.5);
+      if (shuffle) {
+        // Fisher-Yates shuffle
+        for (let i = positions.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [positions[i], positions[j]] = [positions[j], positions[i]];
+        }
+      }
 
-      positions.forEach((pos) => {
+      positions.forEach((pos, i) => {
         const piece = document.createElement("div");
-        piece.classList.add("piece");
+        piece.className = "piece";
+        piece.id = "p-" + i; // id unique dùng để truyền trong dataTransfer
+        // background position: mỗi mảnh hiển thị đúng phần của ảnh đầy đủ
+        piece.style.backgroundPosition = `-${pos.c * cellSize}px -${pos.r * cellSize}px`;
+        // lưu vị trí đúng để kiểm tra thắng
+        piece.dataset.correctIndex = pos.idx;
         piece.draggable = true;
-        piece.style.backgroundPosition = `-${pos.col * pieceSize}px -${pos.row * pieceSize}px`;
-        piece.dataset.correctIndex = pos.row * gridSize + pos.col;
 
         piece.addEventListener("dragstart", (e) => {
-          e.dataTransfer.setData("text/plain", piece.dataset.correctIndex);
+          e.dataTransfer.setData("text/plain", piece.id);
+          // đặt effectAllowed để rõ ràng
+          e.dataTransfer.effectAllowed = "move";
         });
 
         piecesContainer.appendChild(piece);
       });
     }
 
+    // Xử lý drop
     function handleDrop(e) {
-      const correctIndex = e.dataTransfer.getData("text/plain");
-      const draggedPiece = document.querySelector(`.piece[data-correct-index="${correctIndex}"]`);
-      if (this.children.length > 0) return;
-      this.appendChild(draggedPiece);
+      e.preventDefault();
+      this.classList.remove("highlight");
+      const pieceId = e.dataTransfer.getData("text/plain");
+      if (!pieceId) return;
+      const dragged = document.getElementById(pieceId);
+      if (!dragged) return;
+
+      // Nếu slot đã có mảnh thì không cho thả (bạn có thể thay đổi logic để swap)
+      if (this.querySelector(".piece")) return;
+
+      this.appendChild(dragged);
       checkWin();
     }
 
+    // Kiểm tra thắng
     function checkWin() {
-      const slots = document.querySelectorAll(".slot");
-      let isWin = true;
-      slots.forEach((slot, index) => {
+      const slots = board.querySelectorAll(".slot");
+      let win = true;
+      slots.forEach((slot, idx) => {
         const piece = slot.querySelector(".piece");
-        if (!piece || parseInt(piece.dataset.correctIndex) !== index) {
-          isWin = false;
+        if (!piece) {
+          win = false;
+        } else if (parseInt(piece.dataset.correctIndex, 10) !== idx) {
+          win = false;
         }
       });
-      if (isWin) {
-        setTimeout(() => alert("🎉 Bạn đã ghép xong hình trái tim rồi!"), 100);
+
+      if (win) {
+        setTimeout(() => alert("🎉 Bạn đã ghép xong hình trái tim rồi!"), 120);
       }
     }
 
+    // Helper: đặt tất cả mảnh trở lại vùng bên dưới (reset)
+    function resetPieces() {
+      // lấy tất cả piece (có thể đang ở trong slot)
+      const allPieces = Array.from(document.querySelectorAll(".piece"));
+      piecesContainer.innerHTML = "";
+      // append lại theo id order (không cần đúng vị trí gốc)
+      allPieces.forEach(p => piecesContainer.appendChild(p));
+    }
+
+    // Nếu muốn xáo lại hoàn toàn (tạo lại pieces)
+    document.getElementById("shuffleBtn").addEventListener("click", () => {
+      createPieces(true);
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      createSlots();
+      createPieces(false);
+    });
+
+    // Khởi tạo lần đầu
     createSlots();
-    createPieces();
+    createPieces(true);
   </script>
 </body>
 </html>
