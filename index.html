@@ -3,33 +3,39 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Xếp Hình Trái Tim — Sửa lỗi</title>
+  <title>Xếp Hình Trái Tim To</title>
   <style>
     :root {
-      --size: 300px;
+      --size: 450px; /* 💖 kích thước tổng thể khung trái tim */
       --cell: calc(var(--size) / 3);
     }
 
     body {
       font-family: "Segoe UI", Roboto, sans-serif;
-      background: #fff6fb;
+      background: #fff5f9;
       color: #333;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 16px;
       align-items: center;
-      padding: 24px;
+      padding: 30px;
     }
 
-    h1 { color: #d6336c; margin: 0; }
-    p { margin: 0 0 12px 0; }
+    h1 {
+      color: #d6336c;
+      margin: 0;
+      font-size: 2rem;
+    }
 
-    /* Board (heart-shaped) */
+    p {
+      margin: 0 0 12px 0;
+    }
+
+    /* Board hình trái tim */
     .board-wrap {
       width: var(--size);
       height: var(--size);
       position: relative;
-      /* heart-ish clip-path (simple, works well cross-browser) */
       clip-path: polygon(
         50% 90%,
         10% 55%,
@@ -41,89 +47,93 @@
         90% 55%
       );
       background: linear-gradient(180deg, #fff, #ffeaf2);
-      border: 2px solid #ffd6e6;
-      box-shadow: 0 6px 18px rgba(198, 38, 112, 0.12);
+      border: 3px solid #ffb5ce;
+      box-shadow: 0 6px 20px rgba(214, 51, 108, 0.15);
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       grid-template-rows: repeat(3, 1fr);
       gap: 0;
-      padding: 0;
-      box-sizing: border-box;
     }
 
-    /* slots laid out in the grid */
     .slot {
       width: 100%;
       height: 100%;
-      box-sizing: border-box;
       border: 1px dashed rgba(150,150,150,0.25);
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
       background: transparent;
-      /* allow drops even inside clipped area */
-      pointer-events: auto;
     }
 
-    .slot.highlight { outline: 3px dashed rgba(214,51,108,0.45); }
+    .slot.highlight {
+      outline: 3px dashed rgba(214,51,108,0.45);
+    }
 
-    /* pieces area */
+    /* vùng chứa mảnh */
     #pieces {
       width: var(--size);
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 6px;
       justify-content: center;
     }
 
     .piece {
-      width: calc(var(--cell) - 8px);
-      height: calc(var(--cell) - 8px);
+      width: var(--cell);
+      height: var(--cell);
       box-sizing: border-box;
-      border: 1px solid #8b8b8b;
+      border: 1px solid #888;
       background-image: url("sa1.jpg");
-      background-size: var(--size) var(--size); /* full image scaled to board */
+      background-size: var(--size) var(--size);
       cursor: grab;
       user-select: none;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
     }
 
-    /* when a piece is placed inside a slot, make it fill the slot */
     .slot .piece {
       width: 100%;
       height: 100%;
       border: none;
       cursor: default;
+      box-shadow: none;
     }
 
-    /* small helpers */
-    .row { display:flex; gap:8px; }
-    button { background:#d6336c; color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; }
+    button {
+      background:#d6336c;
+      color:white;
+      border:none;
+      padding:10px 16px;
+      border-radius:6px;
+      cursor:pointer;
+      font-size: 1rem;
+    }
+
+    button:hover {
+      background:#b72559;
+    }
   </style>
 </head>
 <body>
-  <h1>🧩 Xếp Hình Trái Tim</h1>
-  <p>Kéo mảnh bên dưới vào khung trái tim. Nếu lỗi, load lại trang và thử again.</p>
+  <h1>🧩 Xếp Hình Trái Tim To</h1>
+  <p>Kéo các mảnh vào khung trái tim để hoàn thành hình nhé 💗</p>
 
-  <div class="board-wrap" id="board" aria-label="khung trái tim">
-    <!-- slots sẽ được tạo bằng JS -->
-  </div>
+  <div class="board-wrap" id="board"></div>
+  <div id="pieces"></div>
 
-  <div id="pieces" aria-label="mảnh ghép"></div>
-
-  <div style="margin-top:8px;">
-    <button id="shuffleBtn">Xáo lại mảnh</button>
-    <button id="resetBtn">Đặt lại</button>
+  <div style="margin-top:12px;">
+    <button id="shuffleBtn">🔀 Xáo lại mảnh</button>
+    <button id="resetBtn">♻️ Đặt lại</button>
   </div>
 
   <script>
     const board = document.getElementById("board");
     const piecesContainer = document.getElementById("pieces");
     const gridSize = 3;
-    const boardSize = 300; // px, tương ứng với --size
+    const boardSize = 450; // 💖 lớn hơn
     const cellSize = boardSize / gridSize;
 
-    // Tạo slots (3x3)
     function createSlots() {
       board.innerHTML = "";
       for (let i = 0; i < gridSize * gridSize; i++) {
@@ -140,7 +150,6 @@
       }
     }
 
-    // Tạo pieces (dựa trên 3x3 phần của ảnh)
     function createPieces(shuffle = true) {
       piecesContainer.innerHTML = "";
       const positions = [];
@@ -151,7 +160,6 @@
       }
 
       if (shuffle) {
-        // Fisher-Yates shuffle
         for (let i = positions.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           [positions[i], positions[j]] = [positions[j], positions[i]];
@@ -161,16 +169,13 @@
       positions.forEach((pos, i) => {
         const piece = document.createElement("div");
         piece.className = "piece";
-        piece.id = "p-" + i; // id unique dùng để truyền trong dataTransfer
-        // background position: mỗi mảnh hiển thị đúng phần của ảnh đầy đủ
+        piece.id = "p-" + i;
         piece.style.backgroundPosition = `-${pos.c * cellSize}px -${pos.r * cellSize}px`;
-        // lưu vị trí đúng để kiểm tra thắng
         piece.dataset.correctIndex = pos.idx;
         piece.draggable = true;
 
         piece.addEventListener("dragstart", (e) => {
           e.dataTransfer.setData("text/plain", piece.id);
-          // đặt effectAllowed để rõ ràng
           e.dataTransfer.effectAllowed = "move";
         });
 
@@ -178,60 +183,34 @@
       });
     }
 
-    // Xử lý drop
     function handleDrop(e) {
       e.preventDefault();
       this.classList.remove("highlight");
       const pieceId = e.dataTransfer.getData("text/plain");
-      if (!pieceId) return;
       const dragged = document.getElementById(pieceId);
       if (!dragged) return;
-
-      // Nếu slot đã có mảnh thì không cho thả (bạn có thể thay đổi logic để swap)
       if (this.querySelector(".piece")) return;
-
       this.appendChild(dragged);
       checkWin();
     }
 
-    // Kiểm tra thắng
     function checkWin() {
       const slots = board.querySelectorAll(".slot");
       let win = true;
       slots.forEach((slot, idx) => {
         const piece = slot.querySelector(".piece");
-        if (!piece) {
-          win = false;
-        } else if (parseInt(piece.dataset.correctIndex, 10) !== idx) {
+        if (!piece || parseInt(piece.dataset.correctIndex, 10) !== idx) {
           win = false;
         }
       });
-
       if (win) {
-        setTimeout(() => alert("🎉 Bạn đã ghép xong hình trái tim rồi!"), 120);
+        setTimeout(() => alert("🎉 Bạn đã ghép xong hình trái tim rồi!"), 100);
       }
     }
 
-    // Helper: đặt tất cả mảnh trở lại vùng bên dưới (reset)
-    function resetPieces() {
-      // lấy tất cả piece (có thể đang ở trong slot)
-      const allPieces = Array.from(document.querySelectorAll(".piece"));
-      piecesContainer.innerHTML = "";
-      // append lại theo id order (không cần đúng vị trí gốc)
-      allPieces.forEach(p => piecesContainer.appendChild(p));
-    }
+    document.getElementById("shuffleBtn").addEventListener("click", () => createPieces(true));
+    document.getElementById("resetBtn").addEventListener("click", () => { createSlots(); createPieces(false); });
 
-    // Nếu muốn xáo lại hoàn toàn (tạo lại pieces)
-    document.getElementById("shuffleBtn").addEventListener("click", () => {
-      createPieces(true);
-    });
-
-    document.getElementById("resetBtn").addEventListener("click", () => {
-      createSlots();
-      createPieces(false);
-    });
-
-    // Khởi tạo lần đầu
     createSlots();
     createPieces(true);
   </script>
