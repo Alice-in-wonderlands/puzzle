@@ -194,8 +194,9 @@ function checkPassword() {
   const pw = document.getElementById('pwInput');
   if (pw.value==='1510'){
     const gate=document.getElementById('passwordGate');
+    showOverlay(); // 🔥 Hiển thị overlay ngay lập tức
     gate.style.opacity='0';
-    setTimeout(()=>{ gate.style.display='none'; showOverlay(); },800);
+    setTimeout(()=>{ gate.style.display='none'; },800);
   } else {
     pw.classList.add('wrong'); pw.value='Wrong';
     setTimeout(()=>{pw.classList.remove('wrong'); pw.value='';},1000);
