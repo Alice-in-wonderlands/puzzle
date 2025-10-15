@@ -115,6 +115,52 @@
   button { background:#d6336c; color:white; border:none; padding:10px 16px; border-radius:6px; cursor:pointer; font-size: 1rem; }
   button:hover { background:#b72559; }
 </style>
+
+/* 💞 Hiệu ứng trôi mượt khi cuộn và bố cục mỗi ngày rộng rãi hơn */
+#timeline-section {
+  padding: 250px 20px;
+}
+
+.timeline {
+  width: 85%;
+  max-width: 900px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.event {
+  margin: 180px 0; /* Tăng khoảng cách giữa các ngày 💫 */
+  opacity: 0;
+  transform: translateY(80px);
+  transition: all 1.3s ease-out;
+}
+
+.event.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.event img {
+  transition: transform 1.2s ease-out, opacity 1.2s ease-out;
+  opacity: 0.8;
+}
+
+.event.visible img {
+  transform: scale(1.03);
+  opacity: 1;
+}
+
+.event h3, .event h4 {
+  transition: transform 1.2s ease-out, opacity 1.2s ease-out;
+  opacity: 0.9;
+}
+
+.event.visible h3, .event.visible h4 {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+  
 </head>
 <body>
 
@@ -498,6 +544,19 @@ document.getElementById("resetBtn").addEventListener("click", () => { createSlot
 
 createSlots();
 createPieces(true);
+
+/* 💫 Hiệu ứng trôi mượt cho các mốc thời gian */
+const journeyEvents = document.querySelectorAll("#timeline-section .event");
+
+window.addEventListener("scroll", () => {
+  const trigger = window.innerHeight * 0.85;
+  journeyEvents.forEach((ev) => {
+    const top = ev.getBoundingClientRect().top;
+    if (top < trigger) ev.classList.add("visible");
+  });
+});
+
+  
 </script>
 </body>
 </html>
