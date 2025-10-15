@@ -189,21 +189,98 @@
 </audio>
 
 <script>
-/* PASSWORD, INTRO, SKY... (giữ nguyên toàn bộ phần logic) */
+/* ========== PASSWORD + INTRO ========== */
 function checkPassword() {
   const pw = document.getElementById('pwInput');
   if (pw.value==='1510'){
-    const gate=document.getElementById('passwordGate'); gate.style.opacity='0';
+    const gate=document.getElementById('passwordGate');
+    gate.style.opacity='0';
     setTimeout(()=>{ gate.style.display='none'; showOverlay(); },800);
-  } else { pw.classList.add('wrong'); pw.value='Wrong'; setTimeout(()=>{pw.classList.remove('wrong'); pw.value='';},1000);}
+  } else {
+    pw.classList.add('wrong'); pw.value='Wrong';
+    setTimeout(()=>{pw.classList.remove('wrong'); pw.value='';},1000);
+  }
 }
 
-/* Giữ nguyên logic intro, stars, moon, scroll... */
-function showOverlay(){ /* ... như cũ ... */ }
-function typeText(t,e,c){ let i=0; function n(){ if(i<t.length){e.textContent+=t[i++]; setTimeout(n,100);} else if(c)c();} n();}
-function closeIntro(){ /* ... như cũ ... */ }
+function showOverlay(){
+  const overlay=document.getElementById('intro');
+  overlay.style.display='flex';
+  const line1=document.getElementById('line1');
+  const line2=document.getElementById('line2');
+  const clickText=document.getElementById('clickText');
+  const icons=["❤️","💫","🌙","💐","✨"];
+  const floatContainer=document.getElementById('floatingIcons');
+  function createIcon(){
+    const icon=document.createElement('div');
+    icon.className='floating-icon';
+    icon.textContent=icons[Math.floor(Math.random()*icons.length)];
+    icon.style.left=Math.random()*100+'%';
+    icon.style.bottom='-30px';
+    icon.style.animationDuration=4+Math.random()*3+'s';
+    floatContainer.appendChild(icon);
+    setTimeout(()=>icon.remove(),7000);
+  }
+  setInterval(createIcon,500);
+  setTimeout(()=>{ typeText("🎉❤️Happy Anniversary❤️🎉",line1,()=>{ typeText("October 2024 - October 2025",line2,()=>clickText.classList.add('visible')); });},2000);
+  overlay.addEventListener('click',closeIntro);
+}
 
-/* ❤️ Mini game logic */
+function typeText(text,el,callback){
+  let i=0;
+  function typing(){
+    if(i<text.length){ el.textContent+=text.charAt(i); i++; setTimeout(typing,100);}
+    else if(callback) callback();
+  } typing();
+}
+
+function closeIntro(){
+  const overlay=document.getElementById('intro');
+  overlay.style.transition='opacity 0.9s ease';
+  overlay.style.opacity=0;
+  document.body.style.backgroundColor='#0b0b1d';
+  const music=document.getElementById('bg-music');
+  music.volume=0.7; music.play().catch(()=>{});
+  setTimeout(()=>overlay.style.display='none',900);
+}
+
+/* ========== SKY ELEMENTS ========== */
+const sky=document.getElementById('sky'); const moon=document.getElementById('moon');
+for(let i=0;i<150;i++){
+  const s=document.createElement('div'); s.className='star';
+  const size=Math.random()*2+1;
+  s.style.width=size+'px'; s.style.height=size+'px';
+  s.style.top=Math.random()*100+'%'; s.style.left=Math.random()*100+'%';
+  s.style.animationDelay=Math.random()*3+'s';
+  sky.appendChild(s);
+}
+function createShootingStar(){
+  const s=document.createElement('div');
+  s.className='shooting-star';
+  s.style.top=Math.random()*40+'%'; s.style.left=Math.random()*60+'%';
+  sky.appendChild(s);
+  setTimeout(()=>s.remove(),1800);
+}
+setInterval(()=>{ if(Math.random()<0.4) createShootingStar();},4000);
+
+/* ========== SECTION REVEAL ========== */
+let moonShrinkActive=false; let walked=false;
+const sections=document.querySelectorAll('section');
+window.addEventListener('scroll',()=>{
+  const trigger=window.innerHeight*0.8;
+  sections.forEach(sec=>{
+    if(sec.getBoundingClientRect().top<trigger){
+      sec.classList.add('visible');
+      if(sec.id==='section1') moonShrinkActive=true;
+    }
+  });
+  if(moonShrinkActive){
+    const scrollY=window.scrollY;
+    moon.style.transform=`scale(${Math.max(0.7,1-scrollY/2500)})`;
+    moon.style.opacity=Math.max(0.5,1-scrollY/1800);
+  }
+});
+
+/* ========== MINI GAME ========== */
 const board = document.getElementById("board");
 const piecesContainer = document.getElementById("pieces");
 const gridSize = 3;
@@ -270,7 +347,7 @@ function checkWin() {
     const piece = slot.querySelector(".piece");
     if (!piece || parseInt(piece.dataset.correctIndex, 10) !== idx) win = false;
   });
-  if (win) setTimeout(() => alert("🎉 Bạn đã ghép xong hình trái tim rồi! ❤️"), 100);
+  if (win) setTimeout(() => alert("🎉 Bạn đã ghép xong hình trái tim rồi! 💗"), 100);
 }
 
 document.getElementById("shuffleBtn").addEventListener("click", () => createPieces(true));
