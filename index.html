@@ -595,6 +595,25 @@ function handleDrop(e) {
   checkWin();
 }
 
+  function checkWin() {
+  const slots = document.querySelectorAll(".slot");
+  let filled = 0, correct = 0;
+  slots.forEach((slot, i) => {
+    const piece = slot.querySelector(".piece");
+    if (piece) {
+      filled++;
+      if (parseInt(piece.dataset.correctIndex) === i) correct++;
+    }
+  });
+
+  // Khi đủ 9 mảnh và đúng hết
+  if (filled === 9 && correct === 9) {
+    showFireworks();
+    setTimeout(showReward, 1500); // 🎉 xuất hiện ảnh thưởng sau 1.5s
+  }
+}
+
+  
 /* 🎆 Hiệu ứng pháo hoa */
 function showFireworks() {
   const fireContainer = document.createElement("div");
