@@ -78,6 +78,35 @@
   }
 }
 
+  /* ☁️ Mây lửng lơ trôi nhẹ */
+.cloud {
+  position: absolute;
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 255, 255, 0.12),
+    rgba(255, 255, 255, 0.05) 70%,
+    transparent 100%
+  );
+  filter: blur(40px);
+  border-radius: 50%;
+  opacity: 0.7;
+  animation: floatCloud linear infinite;
+}
+
+/* Mây trôi ngang chậm rãi, hơi dao động */
+@keyframes floatCloud {
+  0% {
+    transform: translateX(-200px) translateY(0);
+  }
+  50% {
+    transform: translateX(200px) translateY(10px);
+  }
+  100% {
+    transform: translateX(-200px) translateY(0);
+  }
+}
+
+
   /* SECTIONS */
   section { opacity:0; transform:translateY(50px); transition:opacity 1s ease, transform 1s ease; padding:200px 20px; text-align:center; }
   section:first-of-type{ padding-top:430px; }
@@ -341,6 +370,9 @@ main.shifted {
 
 <!-- BACKGROUND -->
 <div class="sky" id="sky">
+  <div class="cloud" style="top:20%; left:15%; width:250px; height:120px; animation-duration: 70s;"></div>
+<div class="cloud" style="top:40%; left:60%; width:300px; height:150px; animation-duration: 90s;"></div>
+<div class="cloud" style="top:65%; left:30%; width:220px; height:100px; animation-duration: 80s;"></div>
   <div class="moon" id="moon"></div>
 </div>
 
