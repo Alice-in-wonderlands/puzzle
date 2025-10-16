@@ -237,7 +237,18 @@
   70% { transform: scale(1.6) translateY(-50px); opacity: 1; }
   100% { transform: scale(0) translateY(-100px); opacity: 0; }
 }
-  
+  /* 🌠 Ending text */
+.ending-text {
+  text-align: center;
+  font-size: 1.4em;
+  color: #f2eee7;
+  opacity: 0;
+  margin: 150px auto;
+  transition: opacity 1.5s ease;
+}
+.ending-text.visible {
+  opacity: 1;
+}
 </style>
 </head>
 <body>
@@ -611,11 +622,31 @@ function checkWin() {
     const piece = slot.querySelector(".piece");
     if (!piece || parseInt(piece.dataset.correctIndex, 10) !== idx) win = false;
   });
- if (win) {
+if (win) {
   setTimeout(() => {
     showFireworks();
-    showReward();
-  }, 300);
+
+    const reward = document.createElement('div');
+    reward.className = 'reward-popup';
+    reward.innerHTML = `
+      <div class="reward-content">
+        <h2>🎆 You did it, my love! 💖</h2>
+        <img src="anni.jpg" alt="Reward" />
+        <p>Our love — one year and counting. 💞<br>And this is just the beginning...</p>
+        <button id="closeReward">Close</button>
+      </div>
+    `;
+    document.body.appendChild(reward);
+    document.getElementById('closeReward').onclick = () => {
+      reward.remove();
+      // 💫 Kết nhẹ nhàng sau khi đóng
+      const end = document.createElement('div');
+      end.className = 'ending-text';
+      end.innerHTML = `<p>✨ And our story continues... always, you and me. 💫</p>`;
+      document.body.appendChild(end);
+      setTimeout(() => end.classList.add('visible'), 100);
+    };
+  }, 500);
 }
 }
 
