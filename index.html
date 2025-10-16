@@ -41,17 +41,8 @@
   .floating-icon { position: absolute; font-size: 2em; opacity: 0.6; animation: floatUp 6s linear infinite; }
   @keyframes floatUp { 0%{transform:translateY(0) scale(1);opacity:0.8;} 80%{opacity:1;} 100%{transform:translateY(-120vh) scale(0.9);opacity:0;} }
   .intro-overlay span, .intro-overlay small { position: relative; z-index: 2; }
- .intro-overlay span {
-  font-weight: 700;
-  text-shadow: 0 0 8px rgba(255, 200, 220, 0.8),
-               0 0 20px rgba(255, 150, 180, 0.4);
-}
-
-.intro-overlay .line2 {
-  font-weight: 600;
-  text-shadow: 0 0 6px rgba(255, 230, 240, 0.7);
-}
-
+  .intro-overlay span { font-size: 2em; font-weight: 700; margin-bottom: 20px; white-space: pre; }
+  .intro-overlay .line2 { font-size: 1.5em;  font-weight: 600; margin-top:0; }
   .intro-overlay small { font-size:0.6em; font-weight:300; opacity:0; margin-top:25px; transition:opacity 1.5s ease; }
   .intro-overlay small.visible { opacity:0.8; }
 
@@ -67,6 +58,45 @@
   section { opacity:0; transform:translateY(50px); transition:opacity 1s ease, transform 1s ease; padding:200px 20px; text-align:center; }
   section:first-of-type{ padding-top:430px; }
   section.visible{ opacity:1; transform:translateY(0); }
+
+  /* 🌟 Hiệu ứng cho phần tiêu đề mở đầu */
+#section1 h1 {
+  font-size: 2.5em;
+  color: #fff4f7;
+  text-shadow:
+    0 0 8px rgba(255, 180, 200, 0.8),
+    0 0 16px rgba(255, 120, 160, 0.6),
+    0 0 30px rgba(255, 90, 140, 0.4);
+  animation: glowPulse 3s ease-in-out infinite;
+}
+
+/* ✨ Hiệu ứng nhịp sáng nhẹ như tim đập */
+@keyframes glowPulse {
+  0%, 100% {
+    text-shadow:
+      0 0 8px rgba(255, 180, 200, 0.8),
+      0 0 16px rgba(255, 120, 160, 0.6),
+      0 0 30px rgba(255, 90, 140, 0.4);
+  }
+  50% {
+    text-shadow:
+      0 0 14px rgba(255, 210, 220, 1),
+      0 0 28px rgba(255, 160, 180, 0.8),
+      0 0 45px rgba(255, 100, 150, 0.6);
+  }
+}
+
+/* 💌 Dòng văn bản bên dưới – nghiêng, Times New Roman */
+#section1 p {
+  font-family: "Times New Roman", serif;
+  font-style: italic;
+  font-size: 1.1em;
+  color: #f2eee7;
+  line-height: 1.7;
+  max-width: 700px;
+  margin: 20px auto 0;
+}
+
 
   .timeline { position:relative; width:80%; margin:120px auto; max-width:600px; text-align:left; }
   .event { margin:120px 0; position:relative; }
