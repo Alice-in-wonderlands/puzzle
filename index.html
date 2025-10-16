@@ -239,6 +239,7 @@
 }
 
 /* 🌅 Màn kết tinh tế (nền mờ hơn, dreamy hơn) */
+/* 🌅 Màn kết tinh tế – dịu nhẹ, ấm áp hơn */
 .ending-scene {
   position: fixed;
   inset: 0;
@@ -246,14 +247,15 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  background: rgba(0, 0, 0, 0.55); /* 👈 nền đậm hơn một chút */
-  backdrop-filter: blur(12px); /* 👈 mờ nhiều hơn */
-  -webkit-backdrop-filter: blur(12px);
+  background: radial-gradient(circle at center, rgba(255, 192, 203, 0.15), rgba(0, 0, 0, 0.6));
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   opacity: 0;
   transition: opacity 2s ease;
   z-index: 9999;
   text-align: center;
 }
+
 
 
 .ending-scene.visible {
