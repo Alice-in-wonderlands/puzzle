@@ -56,9 +56,9 @@
   position: absolute;
   width: 120px;
   height: 2px;
-  background: linear-gradient(90deg, rgba(255,255,255,1), rgba(255,255,255,0));
+  background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,1));
   opacity: 0;
-  transform: rotate(-30deg);
+  transform: rotate(30deg);
   filter: drop-shadow(0 0 8px rgba(255,255,255,0.9)) blur(0.5px);
   animation: shoot 1.8s cubic-bezier(0.3, 0.1, 0.7, 1) forwards;
 }
@@ -66,18 +66,17 @@
 @keyframes shoot {
   0% {
     opacity: 1;
-    transform: translate(0, 0) rotate(-30deg);
+    transform: translate(0, 0) rotate(30deg);
   }
   70% {
     opacity: 1;
-    transform: translate(300px, 150px) rotate(-30deg);
+    transform: translate(300px, 150px) rotate(30deg);
   }
   100% {
     opacity: 0;
-    transform: translate(450px, 250px) rotate(-30deg);
+    transform: translate(450px, 250px) rotate(30deg);
   }
 }
-
 
   /* SECTIONS */
   section { opacity:0; transform:translateY(50px); transition:opacity 1s ease, transform 1s ease; padding:200px 20px; text-align:center; }
@@ -454,8 +453,8 @@ main.shifted {
 
 <!-- ❤️ Mini Game -->
 <section>
-  <h2>🧩 Xếp Hình Trái Tim 💗</h2>
-  <p>Kéo các mảnh vào khung trái tim — thử xem ghép nhanh không nha 😘</p>
+  <h2>🧩Solving Problem💗</h2>
+  <p>Pull the pieces into the heart. Let's see if you can fullfil it!😘</p>
 
   <div class="board-wrap" id="board"></div>
   <div id="pieces"></div>
