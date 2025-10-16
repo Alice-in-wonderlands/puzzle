@@ -767,6 +767,21 @@ document.getElementById("resetBtn").addEventListener("click", () => { createSlot
 
 createSlots();
 createPieces(true);
+  
+// Cho phép double click để ẩn phần "to be continued"
+const endingScreen = document.querySelector('.ending-screen');
+
+if (endingScreen) {
+  endingScreen.addEventListener('dblclick', () => {
+    endingScreen.style.transition = 'opacity 1s ease';
+    endingScreen.style.opacity = '0';
+    setTimeout(() => {
+      endingScreen.style.display = 'none';
+    }, 1000);
+  });
+}
+
+  
 </script>
 </body>
 </html>
