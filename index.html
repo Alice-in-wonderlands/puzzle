@@ -52,13 +52,13 @@
   .moon { position:absolute; top:5%; right:8%; width:160px; height:160px; background: radial-gradient(circle at 30%30%, #fff,#ddd 60%,#aaa 100%); border-radius:50%; box-shadow:0 0 50px 20px rgba(255,255,200,0.4); transform:scale(1); transition:transform 1.5s ease-out,opacity 1.5s ease-out; }
   .star { position:absolute; background:white; border-radius:50%; opacity:0.8; animation: twinkle 2s infinite ease-in-out; }
   @keyframes twinkle { 0%,100%{opacity:0.2;} 50%{opacity:1;} }
- .shooting-star {
+.shooting-star {
   position: absolute;
   width: 120px;
   height: 2px;
-  background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,1));
+  background: linear-gradient(90deg, rgba(255,255,255,1), rgba(255,255,255,0));
   opacity: 0;
-  transform: rotate(150deg);
+  transform: rotate(-30deg);
   filter: drop-shadow(0 0 8px rgba(255,255,255,0.9)) blur(0.5px);
   animation: shoot 1.8s cubic-bezier(0.3, 0.1, 0.7, 1) forwards;
 }
@@ -66,17 +66,18 @@
 @keyframes shoot {
   0% {
     opacity: 1;
-    transform: translate(0, 0) rotate(150deg);
+    transform: translate(0, 0) rotate(-30deg);
   }
   70% {
     opacity: 1;
-    transform: translate(-300px, 150px) rotate(150deg);
+    transform: translate(300px, 150px) rotate(-30deg);
   }
   100% {
     opacity: 0;
-    transform: translate(-450px, 250px) rotate(150deg);
+    transform: translate(450px, 250px) rotate(-30deg);
   }
 }
+
 
   /* SECTIONS */
   section { opacity:0; transform:translateY(50px); transition:opacity 1s ease, transform 1s ease; padding:200px 20px; text-align:center; }
