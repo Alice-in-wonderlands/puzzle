@@ -722,19 +722,20 @@ main.shifted {
 <section>
   <h2>🧩Solving Problem💗</h2>
 
-  <div class="board-wrap">
-    <!-- 💖 Nút Play nằm giữa trái tim -->
+  <!-- Tim + Play -->
+  <div class="heart-wrap" style="position:relative; width:450px; height:450px; margin:0 auto;">
+    <div class="board-wrap"></div> <!-- chỉ để tạo hình tim -->
     <div class="play-btn" id="playBtn"></div>
+  </div>
 
-    <!-- 🧩 Phần nội dung game, ẩn đi ban đầu -->
-    <div id="game-content">
-      <p>Pull the pieces into the heart. Let's see if you can fulfill it! 😘</p>
-      <div class="board-wrap" id="board"></div>
-      <div id="pieces"></div>
-      <div style="margin-top:12px;">
-        <button id="shuffleBtn">🔀Shuffle</button>
-        <button id="resetBtn">♻️Again</button>
-      </div>
+  <!-- Game nội dung, tách hẳn ra -->
+  <div id="game-content">
+    <p>Pull the pieces into the heart. Let's see if you can fulfill it! 😘</p>
+    <div class="board-wrap" id="board"></div>
+    <div id="pieces"></div>
+    <div style="margin-top:12px;">
+      <button id="shuffleBtn">🔀Shuffle</button>
+      <button id="resetBtn">♻️Again</button>
     </div>
   </div>
 </section>
