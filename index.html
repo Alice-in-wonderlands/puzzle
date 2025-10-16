@@ -380,6 +380,51 @@
   .tab:hover{ background-color:#d8d4c7; }
   .letter { display:none; margin:20px auto; max-width:500px; background-color:rgba(247,244,238,0.9); padding:20px; border-radius:15px; color:#3b2f2f; box-shadow:0 0 10px rgba(0,0,0,0.3); }
 
+ /* Nút play nằm giữa trái tim */
+.play-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 20px rgba(255, 150, 180, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  z-index: 10;
+}
+
+.play-btn:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 0 25px rgba(255, 170, 200, 0.8);
+}
+
+/* Biểu tượng tam giác trong nút play */
+.play-btn::before {
+  content: "▶";
+  color: #d6336c;
+  font-size: 2rem;
+  margin-left: 5px;
+}
+
+/* Ẩn các phần game ban đầu */
+#game-content {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s ease;
+}
+
+#game-content.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+  
   /* 🎯 Mini game trái tim */
   :root {
     --size: 450px;
@@ -457,8 +502,6 @@
   text-align: center;
 }
 
-
-
 .ending-scene.visible {
   opacity: 1;
 }
@@ -496,7 +539,6 @@ main.shifted {
   opacity: 0.8; /* hơi mờ đi chút, cho nổi phần ending */
   filter: blur(2px);
 }
-
   
 </style>
 </head>
@@ -635,17 +677,20 @@ main.shifted {
 <!-- ❤️ Mini Game -->
 <section>
   <h2>🧩Solving Problem💗</h2>
-  <p>Pull the pieces into the heart. Let's see if you can fullfil it!😘</p>
-
-  <div class="board-wrap" id="board"></div>
-  <div id="pieces"></div>
-
-  <div style="margin-top:12px;">
-    <button id="shuffleBtn">🔀Shuffle</button>
-    <button id="resetBtn">♻️Again</button>
+  <div class="board-wrap" id="board-wrap">
+    <div class="play-btn" id="playBtn"></div>
+    <div id="game-content">
+      <p>Pull the pieces into the heart. Let's see if you can fullfil it!😘</p>
+      <div class="board-wrap" id="board"></div>
+      <div id="pieces"></div>
+      <div style="margin-top:12px;">
+        <button id="shuffleBtn">🔀Shuffle</button>
+        <button id="resetBtn">♻️Again</button>
+      </div>
+    </div>
   </div>
-</section>
-  </main>
+</section> 
+</main>
     
 <audio id="bg-music" loop>
   <source src="mylove.mp3" type="audio/mpeg">
@@ -757,6 +802,22 @@ window.addEventListener("scroll", () => {
 
 
 /* ========== MINI GAME ========== */
+
+// 🎬 Khi bấm nút Play -> Hiện game
+document.getElementById("playBtn").addEventListener("click", () => {
+  const playBtn = document.getElementById("playBtn");
+  const gameContent = document.getElementById("game-content");
+
+  playBtn.style.opacity = "0";
+  playBtn.style.pointerEvents = "none";
+  setTimeout(() => playBtn.style.display = "none", 600);
+
+  setTimeout(() => {
+    gameContent.classList.add("visible");
+  }, 400);
+});
+  
+  
 const board = document.getElementById("board");
 const piecesContainer = document.getElementById("pieces");
 const gridSize = 3;
@@ -909,7 +970,6 @@ function showReward() {
     setTimeout(() => endScene.classList.add("visible"), 100);
   };
 }
-
 
 document.getElementById("shuffleBtn").addEventListener("click", () => createPieces(true));
 document.getElementById("resetBtn").addEventListener("click", () => { createSlots(); createPieces(false); });
