@@ -285,6 +285,17 @@
   50% { text-shadow: 0 0 20px rgba(255, 150, 180, 1); }
 }
 
+  /* ✨ Khi ending xuất hiện, phần main trượt nhẹ xuống */
+main {
+  transition: transform 1.2s ease, opacity 1.2s ease;
+}
+
+main.shifted {
+  transform: translateY(40px);
+  opacity: 0.8; /* hơi mờ đi chút, cho nổi phần ending */
+  filter: blur(2px);
+}
+
   
 </style>
 </head>
@@ -311,6 +322,7 @@
 </div>
 
 <!-- CONTENT -->
+  <main>
 <section id="section1">
   <h1>Happy 1 Year Anniversary, My Love❤️</h1>
  <p>
@@ -429,7 +441,8 @@
     <button id="resetBtn">♻️ Đặt lại</button>
   </div>
 </section>
-
+  </main>
+    
 <audio id="bg-music" loop>
   <source src="mylove.mp3" type="audio/mpeg">
 </audio>
@@ -613,7 +626,7 @@ function handleDrop(e) {
   // Khi đủ 9 mảnh và đúng hết
   if (filled === 9 && correct === 9) {
     showFireworks();
-    setTimeout(showReward, 1500); // 🎉 xuất hiện ảnh thưởng sau 1.5s
+    setTimeout(showReward, 1000); // 🎉 xuất hiện ảnh thưởng sau 1s
   }
 }
 
@@ -638,7 +651,7 @@ function showFireworks() {
     spark.style.background = `hsl(${Math.random() * 360}, 100%, 70%)`;
     spark.style.top = Math.random() * 100 + "%";
     spark.style.left = Math.random() * 100 + "%";
-    spark.style.animation = "burst 1.2s ease-out forwards";
+    spark.style.animation = "burst 1s ease-out forwards";
     fireContainer.appendChild(spark);
   }
 
@@ -672,6 +685,8 @@ function showReward() {
   // Khi bấm Close -> Hiện kết
   document.getElementById("closeRewardBtn").onclick = () => {
     reward.remove();
+    document.querySelector("main").classList.add("shifted");
+
 
     // Hiệu ứng nền kết nhẹ
     document.body.style.transition = "background-color 3s ease";
