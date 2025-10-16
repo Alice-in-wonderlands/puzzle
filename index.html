@@ -768,20 +768,25 @@ document.getElementById("resetBtn").addEventListener("click", () => { createSlot
 createSlots();
 createPieces(true);
   
-// Cho phép double click để ẩn phần "to be continued"
-const endingScreen = document.querySelector('.ending-screen');
-
-if (endingScreen) {
-  endingScreen.addEventListener('dblclick', () => {
-    endingScreen.style.transition = 'opacity 1s ease';
-    endingScreen.style.opacity = '0';
-    setTimeout(() => {
-      endingScreen.style.display = 'none';
-    }, 1000);
+// ✨ Cho phép double click để ẩn phần "To be continued..."
+document.addEventListener("DOMContentLoaded", () => {
+  const observer = new MutationObserver(() => {
+    const endingScene = document.querySelector(".ending-scene");
+    if (endingScene && !endingScene.dataset.bound) {
+      endingScene.dataset.bound = "true";
+      endingScene.addEventListener("dblclick", () => {
+        endingScene.style.transition = "opacity 1s ease";
+        endingScene.style.opacity = "0";
+        setTimeout(() => {
+          endingScene.style.display = "none";
+        }, 1000);
+      });
+    }
   });
-}
 
-  
+  observer.observe(document.body, { childList: true, subtree: true });
+});
+
 </script>
 </body>
 </html>
