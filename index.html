@@ -768,21 +768,34 @@ document.getElementById("resetBtn").addEventListener("click", () => { createSlot
 createSlots();
 createPieces(true);
   
-// 🔥 Cho phép double click để ẩn phần "To be continued..."
+// ✨ Cho phép double click để ẩn "To be continued..." và hiện lại main
 document.addEventListener("DOMContentLoaded", () => {
   const observer = new MutationObserver(() => {
     const endingScene = document.querySelector(".ending-scene");
+    const main = document.querySelector("main");
     if (endingScene && !endingScene.dataset.bound) {
       endingScene.dataset.bound = "true";
       endingScene.addEventListener("dblclick", () => {
+        // 1️⃣ Làm mờ dần phần "To be continued..."
         endingScene.style.transition = "opacity 1s ease";
         endingScene.style.opacity = "0";
+
+        // 2️⃣ Hiện lại main sau khi "to be continued" biến mất
         setTimeout(() => {
           endingScene.style.display = "none";
+
+          // Gỡ hiệu ứng blur / opacity giảm của main (nếu có)
+          if (main) {
+            main.classList.remove("shifted"); // hoặc "blurred" nếu bạn dùng class đó
+            main.style.filter = "none";
+            main.style.opacity = "1";
+            main.style.transform = "translateY(0)";
+          }
         }, 1000);
       });
     }
   });
+
   observer.observe(document.body, { childList: true, subtree: true });
 });
 
