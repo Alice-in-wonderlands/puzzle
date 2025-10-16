@@ -89,12 +89,20 @@
 .milestone.right .image { order: 1; }
 
 .milestone .image img {
-  width: 300px;
-  height: 200px;
+  width: 280px;
+  height: 280px; /* 👈 Giữ tỉ lệ vuông */
   object-fit: cover;
-  border-radius: 15px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.35);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
+
+/* Hiệu ứng khi hover ảnh cho sinh động hơn */
+.milestone .image img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px rgba(255, 182, 193, 0.4);
+}
+
 
 .milestone .text h3 {
   font-size: 1.4em;
