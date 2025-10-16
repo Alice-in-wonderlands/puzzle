@@ -768,7 +768,7 @@ document.getElementById("resetBtn").addEventListener("click", () => { createSlot
 createSlots();
 createPieces(true);
   
-// ✨ Cho phép double click để ẩn phần "To be continued..."
+// 🔥 Cho phép double click để ẩn phần "To be continued..."
 document.addEventListener("DOMContentLoaded", () => {
   const observer = new MutationObserver(() => {
     const endingScene = document.querySelector(".ending-scene");
@@ -783,7 +783,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
   });
-
   observer.observe(document.body, { childList: true, subtree: true });
 });
 
