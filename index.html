@@ -237,53 +237,7 @@
   70% { transform: scale(1.6) translateY(-50px); opacity: 1; }
   100% { transform: scale(0) translateY(-100px); opacity: 0; }
 }
-/* 🌸 Màn kết tinh tế */
-.ending-scene {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(4px);
-  opacity: 0;
-  transition: opacity 2s ease;
-  z-index: 9999;
-}
-
-.ending-scene.visible {
-  opacity: 1;
-}
-
-.ending-text {
-  text-align: center;
-  color: #f9f5ef;
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.6em;
-  text-shadow: 0 0 10px rgba(255, 200, 210, 0.6);
-  animation: fadeGlow 4s ease-in-out infinite;
-}
-
-.ending-text small {
-  display: block;
-  margin-top: 20px;
-  font-size: 0.8em;
-  opacity: 0.9;
-  color: #fce4ec;
-  letter-spacing: 1px;
-}
-
-/* 💫 Nhịp sáng nhẹ cho dòng kết */
-@keyframes fadeGlow {
-  0%, 100% {
-    text-shadow: 0 0 8px rgba(255, 200, 210, 0.7);
-  }
-  50% {
-    text-shadow: 0 0 20px rgba(255, 160, 190, 1);
-  }
-}
-
+  
 </style>
 </head>
 <body>
@@ -657,42 +611,11 @@ function checkWin() {
     const piece = slot.querySelector(".piece");
     if (!piece || parseInt(piece.dataset.correctIndex, 10) !== idx) win = false;
   });
-if (win) {
+ if (win) {
   setTimeout(() => {
     showFireworks();
-
-    const reward = document.createElement('div');
-    reward.className = 'reward-popup';
-    reward.innerHTML = `
-      <div class="reward-content">
-        <h2>🎆 You did it, my love! 💖</h2>
-        <img src="anni.jpg" alt="Reward" />
-        <p>Our love — one year and counting. 💞<br>And this is just the beginning...</p>
-        <button id="closeReward">Close</button>
-      </div>
-    `;
-    document.body.appendChild(reward);
-    document.getElementById('closeReward').onclick = () => {
-    reward.remove();
-
-// 🌅 Hiệu ứng chuyển nền kết
-document.body.style.transition = "background-color 3s ease";
-document.body.style.backgroundColor = "#2b0a18"; // hơi sáng hơn tông gốc
-
-// 🌸 Tạo màn kết
-const end = document.createElement('div');
-end.className = 'ending-scene';
-end.innerHTML = `
-  <div class="ending-text">
-    <p>✨ And our story continues...<br>always, you and me. 💫</p>
-    <small>Forever us. ❤️</small>
-  </div>
-`;
-document.body.appendChild(end);
-setTimeout(() => end.classList.add('visible'), 200);
-
-    };
-  }, 500);
+    showReward();
+  }, 300);
 }
 }
 
