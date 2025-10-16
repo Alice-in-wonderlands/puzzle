@@ -53,7 +53,20 @@
   .star { position:absolute; background:white; border-radius:50%; opacity:0.8; animation: twinkle 2s infinite ease-in-out; }
   @keyframes twinkle { 0%,100%{opacity:0.2;} 50%{opacity:1;} }
   .shooting-star { position:absolute; width:120px; height:2px; background:linear-gradient(90deg, rgba(255,255,255,1), rgba(255,255,255,0)); opacity:0; transform:rotate(-30deg); filter:drop-shadow(0 0 6px white); animation:shoot 1.8s ease-out forwards; }
-  @keyframes shoot { 0%{opacity:1;transform:translate(0,0) rotate(-30deg);} 70%{opacity:1;transform:translate(300px,150px) rotate(-30deg);} 100%{opacity:0;transform:translate(450px,250px) rotate(-30deg);} }
+@keyframes shoot {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(30deg);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(-300px, 150px) rotate(30deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-450px, 250px) rotate(30deg);
+  }
+}
 
   /* SECTIONS */
   section { opacity:0; transform:translateY(50px); transition:opacity 1s ease, transform 1s ease; padding:200px 20px; text-align:center; }
