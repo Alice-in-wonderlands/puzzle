@@ -380,95 +380,6 @@
   .tab:hover{ background-color:#d8d4c7; }
   .letter { display:none; margin:20px auto; max-width:500px; background-color:rgba(247,244,238,0.9); padding:20px; border-radius:15px; color:#3b2f2f; box-shadow:0 0 10px rgba(0,0,0,0.3); }
 
-/* 💌 Love Letter styles */
-#love-letter-section {
-  text-align: center;
-  margin-top: 2rem;
-}
-
-.love-btn {
-  background: #ff7eb9;
-  color: white;
-  border: none;
-  padding: 0.8rem 1.5rem;
-  border-radius: 12px;
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.love-btn:hover {
-  background: #ff4081;
-  transform: scale(1.05);
-}
-
-.love-letter {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-  transition: opacity 0.4s ease;
-}
-
-.hidden {
-  display: none;
-}
-
-.letter-content {
-  background: #fffafc;
-  color: #333;
-  padding: 2rem;
-  border-radius: 20px;
-  width: 90%;
-  max-width: 500px;
-  position: relative;
-  box-shadow: 0 0 25px rgba(255, 105, 180, 0.3);
-  animation: fadeInUp 0.6s ease;
-}
-
-.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  background: none;
-  border: none;
-  font-size: 1.4rem;
-  cursor: pointer;
-  color: #ff4081;
-  transition: 0.2s;
-}
-
-.close-btn:hover {
-  transform: scale(1.2);
-}
-
-.letter-content h2 {
-  color: #ff4081;
-  margin-bottom: 1rem;
-}
-
-.signature {
-  text-align: right;
-  margin-top: 1.5rem;
-  font-style: italic;
-  color: #ff7eb9;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-  
  /* Nút play nằm giữa trái tim */
 .play-btn {
   position: absolute;
@@ -793,19 +704,25 @@ main.shifted {
   </div>
 </section>
 
-<section>
+<!-- Love Letter modal (thay phần Letter 1 / Letter 2) -->
+<section id="love-letter-section">
   <h2>Love Letters 💖</h2>
-  <div class="tab" onclick="showLetter('letter1')">Letter 1</div>
-  <div class="tab" onclick="showLetter('letter2')">Letter 2</div>
-  <div id="letter1" class="letter">
-    <h3>Letter 1</h3>
-    <p>My love, this year with you has been amazing. Every moment with you is precious...</p>
-  </div>
-  <div id="letter2" class="letter">
-    <h3>Letter 2</h3>
-    <p>I still remember the day we met, and I cherish every day spent with you...</p>
+  <button id="openLetterBtn" class="love-btn">💌 Open Love Letter</button>
+
+  <div id="loveLetter" class="love-letter hidden" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="letter-content" role="document">
+      <button id="closeLetterBtn" class="close-btn" aria-label="Close letter">✖</button>
+      <h2>My Dearest 💖</h2>
+      <p>
+        From the moment we met, every day has been brighter, warmer, and sweeter.
+        You’ve filled my heart with laughter, patience, and love I never knew I needed.
+        Thank you for being my favorite story.
+      </p>
+      <p class="signature">— Yours always, Alice 💌</p>
+    </div>
   </div>
 </section>
+
 
 <!-- ❤️ Mini Game -->
 <section>
@@ -835,25 +752,6 @@ main.shifted {
   <source src="mylove.mp3" type="audio/mpeg">
 </audio>
 
-  <!-- 💌 Love Letter Section -->
-<section id="love-letter-section">
-  <button id="openLetterBtn" class="love-btn">💌 Open Love Letter</button>
-
-  <div id="loveLetter" class="love-letter hidden">
-    <div class="letter-content">
-      <button id="closeLetterBtn" class="close-btn">✖</button>
-      <h2>My Dearest 💖</h2>
-      <p>
-        From the moment we met, every day has been brighter, warmer, and sweeter.  
-        You’ve filled my heart with laughter, patience, and love I never knew I needed.  
-        Thank you for being my favorite story.  
-      </p>
-      <p class="signature">— Yours always, Alice 💌</p>
-    </div>
-  </div>
-</section>
-
-  
 <script>
 /* ========== PASSWORD + INTRO ========== */
 function checkPassword() {
@@ -1177,20 +1075,5 @@ document.addEventListener("DOMContentLoaded", () => {
   observer.observe(document.body, { childList: true, subtree: true });
 });
 </script>
-<script>
-  const openBtn = document.getElementById("openLetterBtn");
-  const closeBtn = document.getElementById("closeLetterBtn");
-  const loveLetter = document.getElementById("loveLetter");
-
-  openBtn.addEventListener("click", () => {
-    loveLetter.classList.remove("hidden");
-  });
-
-  closeBtn.addEventListener("click", () => {
-    loveLetter.classList.add("hidden");
-  });
-</script>
-
-  
 </body>
 </html>
