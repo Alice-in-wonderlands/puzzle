@@ -704,17 +704,21 @@ main.shifted {
   </div>
 </section>
 
-<section>
-  <h2>Love Letters 💖</h2>
-  <div class="tab" onclick="showLetter('letter1')">Letter 1</div>
-  <div class="tab" onclick="showLetter('letter2')">Letter 2</div>
-  <div id="letter1" class="letter">
-    <h3>Letter 1</h3>
-    <p>My love, this year with you has been amazing. Every moment with you is precious...</p>
+<section id="love-letter" class="love-letter">
+  <div id="envelope" class="envelope">
+    💌 Click to open
   </div>
-  <div id="letter2" class="letter">
-    <h3>Letter 2</h3>
-    <p>I still remember the day we met, and I cherish every day spent with you...</p>
+
+  <div id="letter" class="letter hidden">
+    <button id="close-letter" class="close-btn">✖</button>
+    <h2>My Love Letter to You 💖</h2>
+    <p>
+      Gửi đến người thương của anh,  
+      Cảm ơn em vì đã đồng hành cùng anh suốt 1 năm qua.  
+      Từng khoảnh khắc bên em đều là điều anh trân trọng.  
+      Hy vọng chúng ta sẽ còn thật nhiều năm tháng hạnh phúc bên nhau.  
+      — With all my love 💕
+    </p>
   </div>
 </section>
 
@@ -730,7 +734,7 @@ main.shifted {
 
   <!-- Game nội dung, tách hẳn ra -->
   <div id="game-content">
-    <p>Pull the pieces into the heart. Let's see if you can fulfill it! 😘</p>
+    <p>Drag the pieces into the heart. Let's see if you can fulfill it! 😘</p>
     <div class="board-wrap" id="board"></div>
     <div id="pieces"></div>
     <div style="margin-top:12px;">
@@ -1007,7 +1011,7 @@ function showReward() {
     <div style="text-align:center;">
       <h2 style="color:#fff;font-size:2em;margin-bottom:15px;">🎉 You Completed Us! 🎉</h2>
       <img src="anni.jpg" alt="Reward" style="width:400px;border-radius:20px;box-shadow:0 0 25px rgba(255,255,255,0.5);">
-      <p style="color:#fce4ec;margin-top:10px;">Happy Anniversary, my love 💖</p>
+      <p style="color:#fce4ec;margin-top:10px;">Love overflowing…💖</p>
       <button id="closeRewardBtn" style="margin-top:15px;padding:10px 25px;border:none;border-radius:10px;background:#ff6f91;color:white;cursor:pointer;font-size:1rem;">Close 💫</button>
     </div>
   `;
