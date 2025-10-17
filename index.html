@@ -155,7 +155,6 @@
   display: inline-block;
 }
 
-
   .timeline { position:relative; width:80%; margin:120px auto; max-width:600px; text-align:left; }
   .event { margin:120px 0; position:relative; }
   .event::before { content:""; position:absolute; left:50%; top:-80px; width:4px; height:160px; background:#f2eee7; transform:translateX(-50%); }
@@ -199,7 +198,6 @@
   transform: scale(1.05);
   box-shadow: 0 0 30px rgba(255, 182, 193, 0.4);
 }
-
 
 .milestone .text h3 {
   font-size: 1.4em;
@@ -782,20 +780,19 @@ main.shifted {
 </section>
 
 <section id="love-letter" class="love-letter">
-  <div id="envelope" class="envelope">
+<div id="envelope" class="envelope">
     💌 Click to open
   </div>
 
   <div id="letter" class="letter hidden">
     <button id="close-letter" class="close-btn">✖</button>
-    <h2>My Love Letter to You 💖</h2>
-    <p>
-      Gửi đến người thương của anh,  
-      Cảm ơn em vì đã đồng hành cùng anh suốt 1 năm qua.  
-      Từng khoảnh khắc bên em đều là điều anh trân trọng.  
-      Hy vọng chúng ta sẽ còn thật nhiều năm tháng hạnh phúc bên nhau.  
-      — With all my love 💕
-    </p>
+    <div class="letter-content">
+      <p>
+        Dear silly,<br><br>
+        I love you.<br><br>
+        <b>Alice.</b>
+      </p>
+    </div>
   </div>
 </section>
 
@@ -934,8 +931,6 @@ window.addEventListener("scroll", () => {
 
 /* ========== MINI GAME ========== */
 
-/* ========== MINI GAME ========== */
-
 // 🎬 Khi bấm nút Play -> Hiện game (chỉ 1 listener, không có thẻ <script> lồng)
 document.getElementById("playBtn").addEventListener("click", () => {
   const playBtn = document.getElementById("playBtn");
@@ -1050,120 +1045,152 @@ function showFireworks() {
   fireContainer.style.position = "fixed";
   fireContainer.style.inset = "0";
   fireContainer.style.zIndex = "9999";
-  fireContainer.style.pointerEvents = "none";
-  document.body.appendChild(fireContainer);
+<script>
+  const cards = document.querySelectorAll(".card");
+  const resetButton = document.getElementById("resetButton");
+  const shuffleButton = document.getElementById("shuffleButton");
+  const container = document.querySelector(".container");
+  let matchedCount = 0;
 
-  for (let i = 0; i < 25; i++) {
-    const spark = document.createElement("div");
-    spark.className = "spark";
-    spark.style.position = "absolute";
-    spark.style.width = "6px";
-    spark.style.height = "6px";
-    spark.style.borderRadius = "50%";
-    spark.style.background = `hsl(${Math.random() * 360}, 100%, 70%)`;
-    spark.style.top = Math.random() * 100 + "%";
-    spark.style.left = Math.random() * 100 + "%";
-    spark.style.animation = "burst 1s ease-out forwards";
-    fireContainer.appendChild(spark);
+  // Shuffle cards
+  shuffleButton.addEventListener("click", () => {
+    const cardsArray = Array.from(cards);
+    cardsArray.sort(() => Math.random() - 0.5);
+    container.innerHTML = "";
+    cardsArray.forEach(card => container.appendChild(card));
+    resetGame();
+  });
+
+  // Reset game
+  resetButton.addEventListener("click", resetGame);
+
+  function resetGame() {
+    cards.forEach(card => {
+      card.classList.remove("flipped", "matched");
+    });
+    matchedCount = 0;
+    document.body.style.overflow = "auto";
+    const ending = document.getElementById("endingScene");
+    if (ending) ending.remove();
+    const fireContainer = document.getElementById("fireworks");
+    if (fireContainer) fireContainer.remove();
   }
 
-  setTimeout(() => {
-    fireContainer.remove();
-  }, 1800);
-}
+  // Card click behavior
+  cards.forEach(card => {
+    card.addEventListener("click", () => {
+      if (card.classList.contains("flipped") || card.classList.contains("matched")) return;
+      card.classList.add("flipped");
 
-/* 🖼️ Hiện ảnh phần thưởng + ending */
-function showReward() {
-  const reward = document.createElement("div");
-  reward.id = "reward";
-  reward.style.position = "fixed";
-  reward.style.inset = "0";
-  reward.style.display = "flex";
-  reward.style.alignItems = "center";
-  reward.style.justifyContent = "center";
-  reward.style.background = "rgba(0,0,0,0.7)";
-  reward.style.zIndex = "10000";
-
-  reward.innerHTML = `
-    <div style="text-align:center;">
-      <h2 style="color:#fff;font-size:2em;margin-bottom:15px;">🎉 You Completed Us! 🎉</h2>
-      <img src="anni.jpg" alt="Reward" style="width:400px;border-radius:20px;box-shadow:0 0 25px rgba(255,255,255,0.5);">
-      <p style="color:#fce4ec;margin-top:10px;">Love overflowing…💖</p>
-      <button id="closeRewardBtn" style="margin-top:15px;padding:10px 25px;border:none;border-radius:10px;background:#ff6f91;color:white;cursor:pointer;font-size:1rem;">Close 💫</button>
-    </div>
-  `;
-  document.body.appendChild(reward);
-
-  // Khi bấm Close -> Hiện kết
-  document.getElementById("closeRewardBtn").onclick = () => {
-    reward.remove();
-    document.querySelector("main").classList.add("shifted");
-
-    // Hiệu ứng nền kết nhẹ
-    document.body.style.transition = "background-color 3s ease";
-    document.body.style.backgroundColor = "#2b0a18";
-
-    // Hiện màn kết
-    const endScene = document.createElement("div");
-    endScene.className = "ending-scene";
-    endScene.innerHTML = `
-      <div class="ending-text">
-        <h2>To be continued…</h2>
-        <p>This is just our first chapter.<br>I can’t wait to write the rest with you. ❤️</p>
-      </div>
-    `;
-    document.body.appendChild(endScene);
-    setTimeout(() => endScene.classList.add("visible"), 100);
-  };
-}
-
-// Shuffle và Reset buttons
-document.getElementById("shuffleBtn").addEventListener("click", () => createPieces(true));
-document.getElementById("resetBtn").addEventListener("click", () => { createSlots(); createPieces(false); });
-
-// Khởi tạo lần đầu
-createSlots();
-createPieces(true);
-
-// Cho phép double click để ẩn ending và hiện lại main (nếu có)
-document.addEventListener("DOMContentLoaded", () => {
-  const observer = new MutationObserver(() => {
-    const endingScene = document.querySelector(".ending-scene");
-    const main = document.querySelector("main");
-    if (endingScene && !endingScene.dataset.bound) {
-      endingScene.dataset.bound = "true";
-      endingScene.addEventListener("dblclick", () => {
-        endingScene.style.transition = "opacity 1s ease";
-        endingScene.style.opacity = "0";
-        setTimeout(() => {
-          endingScene.style.display = "none";
-          if (main) {
-            main.classList.remove("shifted");
-            main.style.filter = "none";
-            main.style.opacity = "1";
-            main.style.transform = "translateY(0)";
-          }
-        }, 1000);
-      });
-    }
+      const flippedCards = document.querySelectorAll(".card.flipped:not(.matched)");
+      if (flippedCards.length === 2) {
+        const [first, second] = flippedCards;
+        if (first.dataset.name === second.dataset.name) {
+          first.classList.add("matched");
+          second.classList.add("matched");
+          matchedCount += 2;
+          if (matchedCount === cards.length) triggerEnding();
+        } else {
+          setTimeout(() => {
+            first.classList.remove("flipped");
+            second.classList.remove("flipped");
+          }, 800);
+        }
+      }
+    });
   });
-  observer.observe(document.body, { childList: true, subtree: true });
-});
-const envelope = document.getElementById('envelope');
-const letter = document.getElementById('letter');
-const closeBtn = document.getElementById('close-letter');
 
-envelope.addEventListener('click', () => {
-  envelope.style.display = 'none';
-  letter.classList.remove('hidden');
-});
+  // Fireworks & Ending Scene
+  function triggerEnding() {
+    setTimeout(() => {
+      createFireworks();
+      showEndingScene();
+    }, 800);
+  }
 
-closeBtn.addEventListener('click', () => {
-  letter.classList.add('hidden');
-  envelope.style.display = 'flex';
-});
+  function createFireworks() {
+    const fireContainer = document.createElement("div");
+    fireContainer.id = "fireworks";
+    fireContainer.style.position = "fixed";
+    fireContainer.style.top = 0;
+    fireContainer.style.left = 0;
+    fireContainer.style.width = "100%";
+    fireContainer.style.height = "100%";
+    fireContainer.style.pointerEvents = "none";
+    fireContainer.style.zIndex = "9998";
+    document.body.appendChild(fireContainer);
 
-  
+    const colors = ["#ff0055", "#ffcc00", "#00ffcc", "#ff66ff", "#66ccff"];
+
+    for (let i = 0; i < 20; i++) {
+      const spark = document.createElement("div");
+      spark.style.position = "absolute";
+      spark.style.width = "8px";
+      spark.style.height = "8px";
+      spark.style.borderRadius = "50%";
+      spark.style.background = colors[Math.floor(Math.random() * colors.length)];
+      spark.style.left = `${Math.random() * 100}%`;
+      spark.style.top = `${Math.random() * 100}%`;
+      spark.style.opacity = "0.9";
+      fireContainer.appendChild(spark);
+
+      animateSpark(spark);
+    }
+  }
+
+  function animateSpark(spark) {
+    const xMove = (Math.random() - 0.5) * 400;
+    const yMove = (Math.random() - 0.5) * 400;
+    spark.animate(
+      [
+        { transform: "translate(0, 0)", opacity: 1 },
+        { transform: `translate(${xMove}px, ${yMove}px)`, opacity: 0 }
+      ],
+      { duration: 1500 + Math.random() * 1500, easing: "ease-out", iterations: Infinity }
+    );
+  }
+
+  function showEndingScene() {
+    const ending = document.createElement("div");
+    ending.id = "endingScene";
+    ending.style.position = "fixed";
+    ending.style.top = 0;
+    ending.style.left = 0;
+    ending.style.width = "100%";
+    ending.style.height = "100%";
+    ending.style.background = "rgba(0,0,0,0.7)";
+    ending.style.display = "flex";
+    ending.style.flexDirection = "column";
+    ending.style.justifyContent = "center";
+    ending.style.alignItems = "center";
+    ending.style.color = "white";
+    ending.style.fontSize = "3rem";
+    ending.style.zIndex = "9999";
+    ending.style.opacity = "0";
+    ending.style.transition = "opacity 1s ease";
+
+    const message = document.createElement("div");
+    message.innerHTML = "🎉 You did it! 💖";
+    message.style.marginBottom = "1rem";
+
+    const restart = document.createElement("button");
+    restart.textContent = "Play Again";
+    restart.style.padding = "0.6rem 1.2rem";
+    restart.style.fontSize = "1rem";
+    restart.style.border = "none";
+    restart.style.borderRadius = "8px";
+    restart.style.background = "#ff4081";
+    restart.style.color = "white";
+    restart.style.cursor = "pointer";
+    restart.addEventListener("click", resetGame);
+
+    ending.appendChild(message);
+    ending.appendChild(restart);
+    document.body.appendChild(ending);
+
+    setTimeout(() => (ending.style.opacity = "1"), 200);
+  }
+
 </script>
 </body>
 </html>
