@@ -1169,19 +1169,17 @@ const openLetterBtn = document.getElementById("openLetterBtn");
 const closeLetterBtn = document.getElementById("closeLetterBtn");
 const loveLetter = document.getElementById("loveLetter");
 
-// Mở popup
 openLetterBtn.addEventListener("click", () => {
   loveLetter.classList.add("visible");
   loveLetter.setAttribute("aria-hidden", "false");
 });
 
-// Đóng popup
 closeLetterBtn.addEventListener("click", () => {
   loveLetter.classList.remove("visible");
   loveLetter.setAttribute("aria-hidden", "true");
 });
 
-// Đóng khi click ra ngoài
+// Đóng khi click ra ngoài khung thư
 loveLetter.addEventListener("click", (e) => {
   if (e.target === loveLetter) {
     loveLetter.classList.remove("visible");
