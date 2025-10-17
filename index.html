@@ -776,7 +776,7 @@ main.shifted {
   <h2>Love Letters 💖</h2>
   <button id="openLetterBtn" class="love-btn">💌 Open Love Letter</button>
 
-  <div id="loveLetter" class="love-letter hidden" aria-hidden="true" role="dialog" aria-modal="true">
+<div id="loveLetter" class="love-letter" aria-hidden="true" role="dialog" aria-modal="true">
     <div class="letter-content" role="document">
       <button id="closeLetterBtn" class="close-btn" aria-label="Close letter">✖</button>
       <h2>My Dearest 💖</h2>
@@ -1182,7 +1182,21 @@ if (openLetterBtn && closeLetterBtn && loveLetter) {
     if (e.target === loveLetter) loveLetter.classList.remove("visible");
   });
 }
-  
+ /* 💌 LOVE LETTER POPUP */
+const openLetterBtn = document.getElementById("openLetterBtn");
+const closeLetterBtn = document.getElementById("closeLetterBtn");
+const loveLetter = document.getElementById("loveLetter");
+
+openLetterBtn.addEventListener("click", () => {
+  loveLetter.classList.add("visible");
+  loveLetter.setAttribute("aria-hidden", "false");
+});
+
+closeLetterBtn.addEventListener("click", () => {
+  loveLetter.classList.remove("visible");
+  loveLetter.setAttribute("aria-hidden", "true");
+});
+ 
 </script>
 </body>
 </html>
