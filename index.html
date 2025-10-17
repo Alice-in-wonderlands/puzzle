@@ -1163,39 +1163,32 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   observer.observe(document.body, { childList: true, subtree: true });
 });
-// 💌 Love Letter Popup Logic
+  
+/* ========== LOVE LETTER POPUP ========== */
 const openLetterBtn = document.getElementById("openLetterBtn");
 const closeLetterBtn = document.getElementById("closeLetterBtn");
 const loveLetter = document.getElementById("loveLetter");
 
-if (openLetterBtn && closeLetterBtn && loveLetter) {
-  openLetterBtn.addEventListener("click", () => {
-    loveLetter.classList.add("visible");
-  });
-
-  closeLetterBtn.addEventListener("click", () => {
-    loveLetter.classList.remove("visible");
-  });
-
-  // Đóng khi bấm ngoài khung thư
-  loveLetter.addEventListener("click", (e) => {
-    if (e.target === loveLetter) loveLetter.classList.remove("visible");
-  });
-}
- /* 💌 LOVE LETTER POPUP */
-const openLetterBtn = document.getElementById("openLetterBtn");
-const closeLetterBtn = document.getElementById("closeLetterBtn");
-const loveLetter = document.getElementById("loveLetter");
-
+// Mở popup
 openLetterBtn.addEventListener("click", () => {
   loveLetter.classList.add("visible");
   loveLetter.setAttribute("aria-hidden", "false");
 });
 
+// Đóng popup
 closeLetterBtn.addEventListener("click", () => {
   loveLetter.classList.remove("visible");
   loveLetter.setAttribute("aria-hidden", "true");
 });
+
+// Đóng khi click ra ngoài
+loveLetter.addEventListener("click", (e) => {
+  if (e.target === loveLetter) {
+    loveLetter.classList.remove("visible");
+    loveLetter.setAttribute("aria-hidden", "true");
+  }
+});
+
  
 </script>
 </body>
