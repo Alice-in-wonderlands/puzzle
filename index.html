@@ -720,6 +720,128 @@ main.shifted {
   background: #ffd6e0;
   transform: scale(1.1);
 }
+/* ✉️ Envelope Animation */
+.envelope-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  position: relative;
+}
+
+.envelope {
+  position: relative;
+  width: 340px;
+  height: 220px;
+  background: #ffc2d1;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  transition: transform 0.4s ease;
+}
+
+.envelope .front {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom right, #ffb3c6, #ffd6e0);
+  border-radius: inherit;
+  z-index: 1;
+}
+
+.envelope .flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60%;
+  background: linear-gradient(to bottom, #ff8fab, #ffb3c6);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  transform-origin: top;
+  transition: transform 0.8s ease;
+  z-index: 2;
+}
+
+.envelope.open .flap {
+  transform: rotateX(-180deg);
+}
+
+.letter {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 85%;
+  transition: top 0.9s ease 0.5s;
+  z-index: 0;
+}
+
+.envelope.open .letter {
+  top: 8%;
+}
+
+.paper {
+  background: #fffdf7;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(100, 70, 50, 0.2);
+  padding: 1.5rem;
+  font-family: "Dancing Script", "Segoe Script", cursive;
+  color: #4a3b2b;
+  line-height: 1.6;
+  background-image: linear-gradient(to bottom, #fffdf7 96%, #f9f1d9 4%);
+  background-size: 100% 2.3em;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.letter-heading {
+  text-align: center;
+  color: #b65b3d;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.signature {
+  margin-top: 1.5rem;
+  text-align: right;
+  font-style: italic;
+  color: #a44b62;
+}
+
+.open-envelope-btn {
+  background: #ff8fab;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transition: background 0.3s ease;
+}
+
+.open-envelope-btn:hover {
+  background: #ff7096;
+}
+
+.close-btn {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  background: #fff;
+  border: 2px solid #ffb3c6;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  color: #ff6f91;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background: #ffd6e0;
+  transform: scale(1.1);
+}
 
   
 </style>
@@ -843,26 +965,32 @@ main.shifted {
 </section>
 
 <!-- Love Letter modal (thay phần Letter 1 / Letter 2) -->
-<div class="letter-content" role="document">
-  <button id="closeLetterBtn" class="close-btn" aria-label="Close letter">✖</button>
-  <div class="letter-paper">
-    <div class="letter-top">💌 My Dearest</div>
-    <div class="letter-body">
-      <p>
-        My love,<br><br>
-        I hope this little letter finds you smiling today.  
-        I just wanted to remind you how much joy you bring into my life.  
-        Every laugh, every quiet moment, every glance — they all mean more than words can say.  
-      </p>
-      <p>
-        You’ve turned the simplest days into something beautiful,  
-        and I’ll always be grateful for your warmth and kindness.  
-        No matter where we are, my heart is always with you.  
-      </p>
-      <p class="signature">With all my love,<br>💖 Alice</p>
+<div class="envelope-container">
+  <div class="envelope">
+    <div class="flap"></div>
+    <div class="front"></div>
+    <div class="letter">
+      <div class="paper">
+        <button id="closeLetterBtn" class="close-btn" aria-label="Close letter">✖</button>
+        <h2 class="letter-heading">💌 My Dearest</h2>
+        <p>
+          My love,<br><br>
+          This little letter carries a piece of my heart to you.  
+          Every thought of you feels like sunshine on a quiet morning.  
+          Thank you for being the calm, the laughter, and the home I never knew I needed.
+        </p>
+        <p>
+          With each word, I just want to remind you:  
+          You are endlessly loved, today and always.  
+        </p>
+        <p class="signature">With all my heart,<br>💖 Alice</p>
+      </div>
     </div>
   </div>
+
+  <button id="openEnvelopeBtn" class="open-envelope-btn">💌 Open Envelope</button>
 </div>
+
 
 
 
@@ -1240,7 +1368,22 @@ loveLetter.addEventListener("click", (e) => {
   }
 });
 
- 
+ // ✉️ Envelope open/close effect
+const openEnvelopeBtn = document.getElementById("openEnvelopeBtn");
+const closeLetterBtn = document.getElementById("closeLetterBtn");
+const envelope = document.querySelector(".envelope");
+const loveLetter = document.getElementById("loveLetter");
+
+openEnvelopeBtn.addEventListener("click", () => {
+  loveLetter.classList.add("visible");
+  setTimeout(() => envelope.classList.add("open"), 300);
+});
+
+closeLetterBtn.addEventListener("click", () => {
+  envelope.classList.remove("open");
+  setTimeout(() => loveLetter.classList.remove("visible"), 600);
+});
+
 </script>
 </body>
 </html>
