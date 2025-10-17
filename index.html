@@ -853,8 +853,9 @@ window.addEventListener("scroll", () => {
 
 /* ========== MINI GAME ========== */
 
-// 🎬 Khi bấm nút Play -> Hiện game
-<script>
+/* ========== MINI GAME ========== */
+
+// 🎬 Khi bấm nút Play -> Hiện game (chỉ 1 listener, không có thẻ <script> lồng)
 document.getElementById("playBtn").addEventListener("click", () => {
   const playBtn = document.getElementById("playBtn");
   const gameContent = document.getElementById("game-content");
@@ -875,16 +876,198 @@ document.getElementById("playBtn").addEventListener("click", () => {
     }, 420);
   }
 
-  // ❌ Xóa đoạn move game (vì nó gây mất mảnh)
-  // Không di chuyển gameContent nữa — giữ nguyên chỗ cũ
-
   // 3) Hiện game sau khi hiệu ứng xong
   setTimeout(() => {
     gameContent.classList.add("visible");
     gameContent.style.marginTop = "20px";
   }, 400);
 });
-</script>
 
+// --- Game logic: tạo ô, mảnh, drag & drop, kiểm tra thắng ---
+const board = document.getElementById("board");
+const piecesContainer = document.getElementById("pieces");
+const gridSize = 3;
+const boardSize = 450;
+const cellSize = boardSize / gridSize;
+
+function createSlots() {
+  board.innerHTML = "";
+  for (let i = 0; i < gridSize * gridSize; i++) {
+    const slot = document.createElement("div");
+    slot.className = "slot";
+    slot.dataset.index = i;
+    slot.addEventListener("dragover", (e) => { e.preventDefault(); slot.classList.add("highlight"); });
+    slot.addEventListener("dragleave", () => slot.classList.remove("highlight"));
+    slot.addEventListener("drop", handleDrop);
+    board.appendChild(slot);
+  }
+}
+
+function createPieces(shuffle = true) {
+  piecesContainer.innerHTML = "";
+  const positions = [];
+  for (let r = 0; r < gridSize; r++) {
+    for (let c = 0; c < gridSize; c++) {
+      positions.push({ r, c, idx: r * gridSize + c });
+    }
+  }
+  if (shuffle) {
+    for (let i = positions.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [positions[i], positions[j]] = [positions[j], positions[i]];
+    }
+  }
+  positions.forEach((pos, i) => {
+    const piece = document.createElement("div");
+    piece.className = "piece";
+    piece.id = "p-" + i;
+    // backgroundPosition dựa trên vị trí ảnh gốc
+    piece.style.backgroundPosition = `-${pos.c * cellSize}px -${pos.r * cellSize}px`;
+    piece.dataset.correctIndex = pos.idx;
+    piece.draggable = true;
+    piece.addEventListener("dragstart", (e) => {
+      e.dataTransfer.setData("text/plain", piece.id);
+      e.dataTransfer.effectAllowed = "move";
+    });
+    piecesContainer.appendChild(piece);
+  });
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  this.classList.remove("highlight");
+  const pieceId = e.dataTransfer.getData("text/plain");
+  const dragged = document.getElementById(pieceId);
+  if (!dragged) return;
+  if (this.querySelector(".piece")) return; // slot đã có piece
+  this.appendChild(dragged);
+  checkWin();
+}
+
+function checkWin() {
+  const slots = document.querySelectorAll(".slot");
+  let filled = 0, correct = 0;
+  slots.forEach((slot, i) => {
+    const piece = slot.querySelector(".piece");
+    if (piece) {
+      filled++;
+      if (parseInt(piece.dataset.correctIndex) === i) correct++;
+    }
+  });
+
+  // Khi đủ 9 mảnh và đúng hết
+  if (filled === gridSize * gridSize && correct === gridSize * gridSize) {
+    showFireworks();
+    setTimeout(showReward, 1000); // xuất hiện ảnh thưởng sau 1s
+  }
+}
+
+/* 🎆 Hiệu ứng pháo hoa (nhẹ) */
+function showFireworks() {
+  const fireContainer = document.createElement("div");
+  fireContainer.id = "fireworks";
+  fireContainer.style.position = "fixed";
+  fireContainer.style.inset = "0";
+  fireContainer.style.zIndex = "9999";
+  fireContainer.style.pointerEvents = "none";
+  document.body.appendChild(fireContainer);
+
+  for (let i = 0; i < 25; i++) {
+    const spark = document.createElement("div");
+    spark.className = "spark";
+    spark.style.position = "absolute";
+    spark.style.width = "6px";
+    spark.style.height = "6px";
+    spark.style.borderRadius = "50%";
+    spark.style.background = `hsl(${Math.random() * 360}, 100%, 70%)`;
+    spark.style.top = Math.random() * 100 + "%";
+    spark.style.left = Math.random() * 100 + "%";
+    spark.style.animation = "burst 1s ease-out forwards";
+    fireContainer.appendChild(spark);
+  }
+
+  setTimeout(() => {
+    fireContainer.remove();
+  }, 1800);
+}
+
+/* 🖼️ Hiện ảnh phần thưởng + ending */
+function showReward() {
+  const reward = document.createElement("div");
+  reward.id = "reward";
+  reward.style.position = "fixed";
+  reward.style.inset = "0";
+  reward.style.display = "flex";
+  reward.style.alignItems = "center";
+  reward.style.justifyContent = "center";
+  reward.style.background = "rgba(0,0,0,0.7)";
+  reward.style.zIndex = "10000";
+
+  reward.innerHTML = `
+    <div style="text-align:center;">
+      <h2 style="color:#fff;font-size:2em;margin-bottom:15px;">🎉 You Completed Us! 🎉</h2>
+      <img src="anni.jpg" alt="Reward" style="width:400px;border-radius:20px;box-shadow:0 0 25px rgba(255,255,255,0.5);">
+      <p style="color:#fce4ec;margin-top:10px;">Happy Anniversary, my love 💖</p>
+      <button id="closeRewardBtn" style="margin-top:15px;padding:10px 25px;border:none;border-radius:10px;background:#ff6f91;color:white;cursor:pointer;font-size:1rem;">Close 💫</button>
+    </div>
+  `;
+  document.body.appendChild(reward);
+
+  // Khi bấm Close -> Hiện kết
+  document.getElementById("closeRewardBtn").onclick = () => {
+    reward.remove();
+    document.querySelector("main").classList.add("shifted");
+
+    // Hiệu ứng nền kết nhẹ
+    document.body.style.transition = "background-color 3s ease";
+    document.body.style.backgroundColor = "#2b0a18";
+
+    // Hiện màn kết
+    const endScene = document.createElement("div");
+    endScene.className = "ending-scene";
+    endScene.innerHTML = `
+      <div class="ending-text">
+        <h2>To be continued…</h2>
+        <p>This is just our first chapter.<br>I can’t wait to write the rest with you. ❤️</p>
+      </div>
+    `;
+    document.body.appendChild(endScene);
+    setTimeout(() => endScene.classList.add("visible"), 100);
+  };
+}
+
+// Shuffle và Reset buttons
+document.getElementById("shuffleBtn").addEventListener("click", () => createPieces(true));
+document.getElementById("resetBtn").addEventListener("click", () => { createSlots(); createPieces(false); });
+
+// Khởi tạo lần đầu
+createSlots();
+createPieces(true);
+
+// Cho phép double click để ẩn ending và hiện lại main (nếu có)
+document.addEventListener("DOMContentLoaded", () => {
+  const observer = new MutationObserver(() => {
+    const endingScene = document.querySelector(".ending-scene");
+    const main = document.querySelector("main");
+    if (endingScene && !endingScene.dataset.bound) {
+      endingScene.dataset.bound = "true";
+      endingScene.addEventListener("dblclick", () => {
+        endingScene.style.transition = "opacity 1s ease";
+        endingScene.style.opacity = "0";
+        setTimeout(() => {
+          endingScene.style.display = "none";
+          if (main) {
+            main.classList.remove("shifted");
+            main.style.filter = "none";
+            main.style.opacity = "1";
+            main.style.transform = "translateY(0)";
+          }
+        }, 1000);
+      });
+    }
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+});
+</script>
 </body>
 </html>
