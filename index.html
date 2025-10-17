@@ -1045,12 +1045,31 @@ function showFireworks() {
   fireContainer.style.position = "fixed";
   fireContainer.style.inset = "0";
   fireContainer.style.zIndex = "9999";
-<script>
-  const cards = document.querySelectorAll(".card");
-  const resetButton = document.getElementById("resetButton");
-  const shuffleButton = document.getElementById("shuffleButton");
-  const container = document.querySelector(".container");
-  let matchedCount = 0;
+function showFireworks() {
+  const fireContainer = document.createElement("div");
+  fireContainer.id = "fireworks";
+  fireContainer.style.position = "fixed";
+  fireContainer.style.inset = "0";
+  fireContainer.style.zIndex = "9999";
+  fireContainer.style.pointerEvents = "none";
+  document.body.appendChild(fireContainer);
+
+  for (let i = 0; i < 20; i++) {
+    const spark = document.createElement("div");
+    spark.style.position = "absolute";
+    spark.style.width = "6px";
+    spark.style.height = "6px";
+    spark.style.borderRadius = "50%";
+    spark.style.background = "white";
+    spark.style.left = Math.random() * 100 + "%";
+    spark.style.top = "100%";
+    spark.style.animation = "burst 1.2s ease-out forwards";
+    fireContainer.appendChild(spark);
+  }
+
+  setTimeout(() => fireContainer.remove(), 1500);
+}
+
 
   // Shuffle cards
   shuffleButton.addEventListener("click", () => {
