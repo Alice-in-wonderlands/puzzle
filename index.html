@@ -539,6 +539,73 @@ main.shifted {
   filter: blur(2px);
 }
 
+/* 💌 Love Letter Popup Styles */
+.love-letter {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.love-letter.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.letter-content {
+  background: #fffafc;
+  color: #3b2f2f;
+  padding: 40px 50px;
+  border-radius: 20px;
+  max-width: 500px;
+  text-align: center;
+  box-shadow: 0 0 25px rgba(255, 180, 200, 0.3);
+  font-family: 'Cormorant Garamond', serif;
+  position: relative;
+  animation: fadeInScale 0.6s ease;
+}
+
+@keyframes fadeInScale {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 1.2em;
+  cursor: pointer;
+  color: #b72559;
+}
+
+.close-btn:hover {
+  color: #e63972;
+}
+
+.love-btn {
+  background-color: #ffb3c6;
+  border: none;
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 1.1em;
+  transition: background 0.3s ease;
+}
+
+.love-btn:hover {
+  background-color: #ff8fab;
+}
+  
   /* Nút play giữa tim */
 .play-btn {
   position: absolute;
@@ -1074,6 +1141,26 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   observer.observe(document.body, { childList: true, subtree: true });
 });
+// 💌 Love Letter Popup Logic
+const openLetterBtn = document.getElementById("openLetterBtn");
+const closeLetterBtn = document.getElementById("closeLetterBtn");
+const loveLetter = document.getElementById("loveLetter");
+
+if (openLetterBtn && closeLetterBtn && loveLetter) {
+  openLetterBtn.addEventListener("click", () => {
+    loveLetter.classList.add("visible");
+  });
+
+  closeLetterBtn.addEventListener("click", () => {
+    loveLetter.classList.remove("visible");
+  });
+
+  // Đóng khi bấm ngoài khung thư
+  loveLetter.addEventListener("click", (e) => {
+    if (e.target === loveLetter) loveLetter.classList.remove("visible");
+  });
+}
+  
 </script>
 </body>
 </html>
