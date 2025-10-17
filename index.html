@@ -708,6 +708,7 @@ main.shifted {
   to { opacity: 1; transform: scale(1); }
 }
 /* 💌 Overlay thư tay */
+/* 💌 Overlay của thư */
 .letter-overlay {
   position: fixed;
   inset: 0;
@@ -718,50 +719,13 @@ main.shifted {
   align-items: center;
   z-index: 9999;
 }
-/* 💌 Bức thư mở ra kiểu thư tay */
-.letter-box {
-  position: relative;
-  width: 80%;
-  max-width: 650px;
-  max-height: 80vh;
-  overflow-y: auto;
-  border-radius: 20px;
-  padding: 60px 60px 50px;
-  box-shadow: 0 0 40px rgba(255, 180, 200, 0.3);
-  background-color: #fffaf1;
-  background-image: 
-    radial-gradient(circle at 1px 1px, rgba(220,200,170,0.15) 1px, transparent 0),
-    radial-gradient(circle at 3px 3px, rgba(200,180,150,0.15) 1px, transparent 0);
-  background-size: 6px 6px;
-  border: 1px solid rgba(170,140,110,0.3);
-  transform-origin: top center;
-  animation: openLetter 1.2s ease forwards;
-  perspective: 1000px;
-}
-
-/* 💌 Animation mở thư kiểu 3D */
-@keyframes openLetter {
-  0% {
-    transform: rotateX(90deg) scale(0.9);
-    opacity: 0;
-  }
-  40% {
-    transform: rotateX(-20deg) scale(1);
-    opacity: 1;
-  }
-  70% {
-    transform: rotateX(10deg);
-  }
-  100% {
-    transform: rotateX(0deg);
-  }
-}
 
 .letter-overlay.active {
   display: flex;
   animation: fadeIn 0.6s ease forwards;
 }
 
+/* 💌 Hộp thư */
 .letter-box {
   position: relative;
   width: 80%;
@@ -769,43 +733,56 @@ main.shifted {
   max-height: 80vh;
   overflow-y: auto;
   border-radius: 20px;
-  padding: 60px 60px 50px;
-  box-shadow: 0 0 40px rgba(255, 180, 200, 0.3);
-  animation: slideUp 0.7s ease forwards;
-
-  /* ✨ Vân giấy vintage */
+  padding: 60px;
   background-color: #fffaf1;
   background-image: 
     radial-gradient(circle at 1px 1px, rgba(220,200,170,0.15) 1px, transparent 0),
     radial-gradient(circle at 3px 3px, rgba(200,180,150,0.15) 1px, transparent 0);
   background-size: 6px 6px;
   border: 1px solid rgba(170,140,110,0.3);
-}
-
-.letter-content {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.25em;
-  line-height: 1.8;
-  text-align: left;
+  box-shadow: 0 0 40px rgba(255, 180, 200, 0.3);
+  transform-origin: top center;
+  animation: openLetter 1.2s ease forwards;
+  perspective: 1000px;
+  font-family: 'Dancing Script', cursive; /* ✍️ font thư tay */
   color: #3b2f2f;
-  white-space: pre-line;
+  line-height: 1.8;
+  font-size: 1.25em;
 }
 
+/* 📜 Nội dung thư */
 .letter-content h3 {
   text-align: center;
-  font-size: 1.8em;
-  margin-bottom: 25px;
+  font-size: 2em;
   color: #5a2a2a;
+  margin-bottom: 20px;
 }
 
-/* ✖ Nút đóng nổi hẳn lên trên */
+.letter-content p {
+  margin-bottom: 15px;
+}
+
+/* ❌ Nút đóng — nằm trên góc thư */
 .close-btn {
-  position: fixed;
-  top: 40px;
-  right: 60px;
-  font-size: 1.8em;
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  font-size: 1.4em;
+  color: #5a2a2a;
   background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rg
+  border: 1px solid rgba(90, 42, 42, 0.3);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+  background: rgba(255, 2
 
 </style>
 </head>
