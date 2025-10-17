@@ -650,7 +650,78 @@ main.shifted {
   pointer-events: auto;
   transform: scale(1);
 }
+/* --- Handwritten Letter Style --- */
+.letter-content {
+  background: none;
+  box-shadow: none;
+  padding: 0;
+}
 
+.letter-paper {
+  background: #fffdf7;
+  border: 1px solid #f1e0b5;
+  border-radius: 10px;
+  box-shadow: 2px 2px 15px rgba(150, 120, 90, 0.25);
+  padding: 2rem;
+  max-width: 500px;
+  font-family: "Dancing Script", "Segoe Script", cursive;
+  color: #4a3b2b;
+  line-height: 1.7;
+  text-align: left;
+  background-image: linear-gradient(to bottom, #fffdf7 97%, #f9f1d9 3%);
+  background-size: 100% 2.2em;
+  position: relative;
+  animation: openLetter 0.7s ease forwards;
+}
+
+@keyframes openLetter {
+  0% { transform: rotateX(90deg); opacity: 0; }
+  100% { transform: rotateX(0deg); opacity: 1; }
+}
+
+.letter-top {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #b65b3d;
+  text-align: center;
+  margin-bottom: 1.2rem;
+}
+
+.letter-body p {
+  margin-bottom: 1rem;
+  text-indent: 1.5em;
+  font-size: 1.15rem;
+}
+
+.signature {
+  margin-top: 1.5rem;
+  text-align: right;
+  font-style: italic;
+  color: #a44b62;
+}
+
+.close-btn {
+  position: absolute;
+  top: -15px;
+  right: -10px;
+  background: #fffaf5;
+  border: 2px solid #d97c8a;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+  color: #d97c8a;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background: #ffd6e0;
+  transform: scale(1.1);
+}
+
+  
 </style>
 </head>
 <body>
@@ -772,45 +843,27 @@ main.shifted {
 </section>
 
 <!-- Love Letter modal (thay phần Letter 1 / Letter 2) -->
-<section id="love-letter-section">
-  <h2>Love Letters 💖</h2>
-  <button id="openLetterBtn" class="love-btn">💌 Open Love Letter</button>
-
-<div id="loveLetter" class="love-letter" aria-hidden="true" role="dialog" aria-modal="true">
-    <div class="letter-content" role="document">
-      <button id="closeLetterBtn" class="close-btn" aria-label="Close letter">✖</button>
-      <h2>My Dearest 💖</h2>
+<div class="letter-content" role="document">
+  <button id="closeLetterBtn" class="close-btn" aria-label="Close letter">✖</button>
+  <div class="letter-paper">
+    <div class="letter-top">💌 My Dearest</div>
+    <div class="letter-body">
       <p>
-It’s been one year — 365 days of laughter, adventures, and even a few tears. <br><br>
-I still remember your first email, inviting me to play badminton… who knew a simple message could change everything? 💌<br><br>
-
-Since then, we’ve shared so many “firsts”: our early morning zoo trip, our first trip to Vũng Tàu, our first time traveling abroad, and all the little moments in between.<br><br>
-Even the tough days — our little break, or the “worst birthday” — showed me how strong we are together.<br><br>
-
-I never thought we could come this far, because from the very beginning it was clear we came from two very different worlds.<br><br>
-You, so calm and logical, always thinking about physics and the world in your head…<br><br>
-And me, the childish, emotional one, feeling everything so deeply. 😅<br><br>
-Yet somehow, we balance each other perfectly — you ground me when I’m too emotional, and I bring warmth and spontaneity to your world.<br><br>
-Against all odds, we found a way to make it work, and together we’ve grown in ways I never expected.<br><br>
-<br><br>
-You make me laugh, feel safe, and loved in ways I never imagined —
-even if your love is the coldest, most low‑key kind I’ve ever known. 😤<br><br>
-And don’t you dare say I’m too clingy again, you unromantic nerd! 💢<br><br>
-(Okay fine, maybe I am… just a little. But it’s your fault for being impossible to resist!) 💞
-<br><br><br><br>
-Traveling, exploring, and simply being with you has become my favorite thing.<br><br>
-Every trip, every laugh, every quiet moment has made me fall even more in love with you.<br><br>
-
-I don’t know what the future holds, but I know one thing:<br><br>
-I want to keep writing our story with you, one happy, silly, and sweet page at a time.<br><br>
-<br><br><br><br>
-Happy anniversary, my love.<br><br>
-Here’s to many more adventures, and to us. 💖
+        My love,<br><br>
+        I hope this little letter finds you smiling today.  
+        I just wanted to remind you how much joy you bring into my life.  
+        Every laugh, every quiet moment, every glance — they all mean more than words can say.  
       </p>
-      <p class="signature">— Yours always, Alice 💌</p>
+      <p>
+        You’ve turned the simplest days into something beautiful,  
+        and I’ll always be grateful for your warmth and kindness.  
+        No matter where we are, my heart is always with you.  
+      </p>
+      <p class="signature">With all my love,<br>💖 Alice</p>
     </div>
   </div>
-</section>
+</div>
+
 
 
 <!-- ❤️ Mini Game -->
