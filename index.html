@@ -854,7 +854,7 @@ window.addEventListener("scroll", () => {
 /* ========== MINI GAME ========== */
 
 // 🎬 Khi bấm nút Play -> Hiện game
-// ---- Thay thế: chỉ 1 lần duy nhất (xoá 2 block lặp cũ) ----
+<script>
 document.getElementById("playBtn").addEventListener("click", () => {
   const playBtn = document.getElementById("playBtn");
   const gameContent = document.getElementById("game-content");
@@ -867,7 +867,6 @@ document.getElementById("playBtn").addEventListener("click", () => {
 
   // 2) Ẩn luôn khung trang trí (nếu muốn thay bằng game)
   if (heartWrap) {
-    // dùng transition mượt: thu nhỏ rồi ẩn
     heartWrap.style.transition = "opacity 0.4s ease, transform 0.4s ease";
     heartWrap.style.opacity = "0";
     heartWrap.style.transform = "scale(0.96)";
@@ -876,21 +875,16 @@ document.getElementById("playBtn").addEventListener("click", () => {
     }, 420);
   }
 
-  // 3) (Tùy chọn) di chuyển #game-content vào đúng vị trí trước đó để thay thế
-  // Nếu bạn muốn game hiện **chính giữa vị trí trái tim cũ**, có thể chèn #game-content vào ngay chỗ heartWrap
-  if (heartWrap && !heartWrap.parentNode.contains(gameContent)) {
-    heartWrap.parentNode.insertBefore(gameContent, heartWrap.nextSibling);
-  }
+  // ❌ Xóa đoạn move game (vì nó gây mất mảnh)
+  // Không di chuyển gameContent nữa — giữ nguyên chỗ cũ
 
-  // 4) Hiện game với hiệu ứng nhẹ
+  // 3) Hiện game sau khi hiệu ứng xong
   setTimeout(() => {
     gameContent.classList.add("visible");
-    // tùy chỉnh khoảng cách nếu cần
     gameContent.style.marginTop = "20px";
   }, 400);
 });
-
-
 </script>
+
 </body>
 </html>
