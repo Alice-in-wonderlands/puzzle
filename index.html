@@ -707,6 +707,78 @@ main.shifted {
   from { opacity: 0; transform: scale(0.9); }
   to { opacity: 1; transform: scale(1); }
 }
+/* 💌 Overlay thư tay */
+.letter-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 0, 0, 0.8);
+  backdrop-filter: blur(6px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.letter-overlay.active {
+  display: flex;
+  animation: fadeIn 0.6s ease forwards;
+}
+
+.letter-box {
+  background: #fffaf4;
+  color: #3b2f2f;
+  font-family: 'Cormorant Garamond', serif;
+  width: 80%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  border-radius: 20px;
+  padding: 40px 50px;
+  box-shadow: 0 0 30px rgba(255, 180, 200, 0.3);
+  position: relative;
+  animation: slideUp 0.7s ease forwards;
+}
+
+.letter-content {
+  font-size: 1.2em;
+  line-height: 1.8;
+  text-align: left;
+  white-space: pre-line;
+}
+
+.letter-content h3 {
+  text-align: center;
+  font-size: 1.6em;
+  margin-bottom: 20px;
+  color: #5a2a2a;
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 1.8em;
+  background: none;
+  border: none;
+  color: #5a2a2a;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.close-btn:hover {
+  color: #b22e53;
+}
+
+/* Hiệu ứng xuất hiện */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(40px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
 
 </style>
 </head>
@@ -829,46 +901,32 @@ main.shifted {
 </section>
 
 <!-- Love Letter modal (thay phần Letter 1 / Letter 2) -->
-<section id="love-letter-section">
-  <h2>Love Letters 💖</h2>
-  <button id="openLetterBtn" class="love-btn">💌 Open Love Letter</button>
-
-  <div id="loveLetter" class="love-letter hidden" aria-hidden="true" role="dialog" aria-modal="true">
-    <div class="letter-content" role="document">
-      <button id="closeLetterBtn" class="close-btn" aria-label="Close letter">✖</button>
-      <h2>My Dearest 💖</h2>
-      <p>
-It’s been one year — 365 days of laughter, adventures, and even a few tears. <br><br>
-I still remember your first email, inviting me to play badminton… who knew a simple message could change everything? 💌<br><br>
-
-Since then, we’ve shared so many “firsts”: our early morning zoo trip, our first trip to Vũng Tàu, our first time traveling abroad, and all the little moments in between.<br><br>
-Even the tough days — our little break, or the “worst birthday” — showed me how strong we are together.<br><br>
-
-I never thought we could come this far, because from the very beginning it was clear we came from two very different worlds.<br><br>
-You, so calm and logical, always thinking about physics and the world in your head…<br><br>
-And me, the childish, emotional one, feeling everything so deeply. 😅<br><br>
-Yet somehow, we balance each other perfectly — you ground me when I’m too emotional, and I bring warmth and spontaneity to your world.<br><br>
-Against all odds, we found a way to make it work, and together we’ve grown in ways I never expected.<br><br>
-<br><br>
-You make me laugh, feel safe, and loved in ways I never imagined —
-even if your love is the coldest, most low‑key kind I’ve ever known. 😤<br><br>
-And don’t you dare say I’m too clingy again, you unromantic nerd! 💢<br><br>
-(Okay fine, maybe I am… just a little. But it’s your fault for being impossible to resist!) 💞
-<br><br><br><br>
-Traveling, exploring, and simply being with you has become my favorite thing.<br><br>
-Every trip, every laugh, every quiet moment has made me fall even more in love with you.<br><br>
-
-I don’t know what the future holds, but I know one thing:<br><br>
-I want to keep writing our story with you, one happy, silly, and sweet page at a time.<br><br>
-<br><br><br><br>
-Happy anniversary, my love.<br><br>
-Here’s to many more adventures, and to us. 💖
-      </p>
-      <p class="signature">— Yours always, Alice 💌</p>
-    </div>
-  </div>
+<section>
+  <h2>Love Letter 💖</h2>
+  <div class="tab" onclick="openLetter()">💌 Read Letter</div>
 </section>
 
+<!-- Overlay thư tay -->
+<div class="letter-overlay" id="letterOverlay">
+  <div class="letter-box">
+    <button class="close-btn" onclick="closeLetter()">×</button>
+    <div class="letter-content">
+      <h3>My Love,</h3>
+      <p>
+        This year with you has been nothing short of magical. Every laugh, every tear, every
+        little moment we shared means more to me than words could ever say.  
+        You’ve become my home, my comfort, and my forever.  
+        Thank you for choosing me, for understanding me, and for loving me so deeply.  
+        <br><br>
+        No matter what happens next, I’ll always cherish this love we’ve built together.  
+        <br><br>
+        With all my heart,  
+        <br>
+        <em>— Yours always ❤️</em>
+      </p>
+    </div>
+  </div>
+</div>
 
 <!-- ❤️ Mini Game -->
 <section>
@@ -1239,7 +1297,16 @@ if (openLetterBtn && closeLetterBtn && loveLetter) {
     if (e.target === loveLetter) loveLetter.classList.remove("visible");
   });
 }
-  
+  /* 💌 Mở và đóng thư tay */
+function openLetter() {
+  document.getElementById("letterOverlay").classList.add("active");
+}
+
+function closeLetter() {
+  const overlay = document.getElementById("letterOverlay");
+  overlay.classList.remove("active");
+}
+
 </script>
 </body>
 </html>
