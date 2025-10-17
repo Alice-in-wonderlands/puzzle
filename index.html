@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>1 Year Anniversary</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
 
 <style>
   body {
@@ -728,7 +728,7 @@ main.shifted {
   animation: fadeIn 0.6s ease forwards;
 }
 
-/* 💌 Hộp thư */
+/* 💌 Hộp thư tay vintage thật hơn */
 .letter-box {
   position: relative;
   width: 80%;
@@ -736,47 +736,37 @@ main.shifted {
   max-height: 80vh;
   overflow-y: auto;
   border-radius: 20px;
-  padding: 60px;
+  padding: 60px 60px 50px;
   background-color: #fffaf1;
   background-image: 
-    radial-gradient(circle at 1px 1px, rgba(220,200,170,0.15) 1px, transparent 0),
-    radial-gradient(circle at 3px 3px, rgba(200,180,150,0.15) 1px, transparent 0);
-  background-size: 6px 6px;
-  border: 1px solid rgba(170,140,110,0.3);
-  box-shadow: 0 0 40px rgba(255, 180, 200, 0.3);
+    radial-gradient(circle at 1px 1px, rgba(210,190,160,0.12) 1px, transparent 0),
+    radial-gradient(circle at 3px 3px, rgba(180,160,130,0.12) 1px, transparent 0);
+  background-size: 7px 7px;
+  border: 1px solid rgba(160,130,100,0.35);
+  box-shadow: 0 0 40px rgba(255, 180, 200, 0.25);
   transform-origin: top center;
   animation: openLetter 1.2s ease forwards;
   perspective: 1000px;
-  font-family: 'Dancing Script', cursive; /* ✍️ font thư tay */
-  color: #3b2f2f;
-  line-height: 1.8;
-  font-size: 1.25em;
+
+  /* ✍️ Font thư tay thật */
+  font-family: 'Nanum Pen Script', cursive;
+  font-size: 1.8em;
+  line-height: 1.6;
+  color: #2b1e1e;
 }
 
-/* 📜 Nội dung thư */
-.letter-content h3 {
-  text-align: center;
-  font-size: 2em;
-  color: #5a2a2a;
-  margin-bottom: 20px;
-}
-
-.letter-content p {
-  margin-bottom: 15px;
-}
-
-/* ❌ Nút đóng — nằm trên góc thư */
+/* ❌ Nút đóng ở góc trên của thư */
 .close-btn {
   position: absolute;
   top: 18px;
   right: 20px;
-  font-size: 1.4em;
+  font-size: 1.5em;
   color: #5a2a2a;
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(90, 42, 42, 0.3);
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(90, 42, 42, 0.25);
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -785,7 +775,10 @@ main.shifted {
 }
 
 .close-btn:hover {
-  background: rgba(255, 2
+  background: rgba(255, 210, 220, 0.9);
+  color: #b22e53;
+  transform: scale(1.1);
+}
 
 </style>
 </head>
